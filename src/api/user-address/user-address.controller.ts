@@ -10,7 +10,9 @@ import {
 import { UserAddressService } from './user-address.service';
 import { CreateUserAddressDto } from './dto/create-user-address.dto';
 import { UpdateUserAddressDto } from './dto/update-user-address.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User-Addresses')
 @Controller('user-address')
 export class UserAddressController {
   constructor(private readonly userAddressService: UserAddressService) {}

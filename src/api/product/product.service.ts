@@ -12,12 +12,15 @@ import { DiscountEntity } from 'src/infra/entities/discount.entity';
 import { DiscountRepo } from 'src/infra/repos/discount.repo';
 import { NestedCategoryEntity } from 'src/infra/entities/nested-category.entity';
 import { NestedCategoryRepo } from 'src/infra/repos/nested-category.repo';
+import { BrandRepo } from 'src/infra/repos/brand.repo';
+import { BrandEntity } from 'src/infra/entities/brand.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(ProductEntity) private readonly productRepo: ProductRepo,
     @InjectRepository(CatalogEntity) private readonly catalogRepo: CatalogRepo,
+    @InjectRepository(BrandEntity) private readonly brandRepo: BrandRepo,
     @InjectRepository(CategoryEntity)
     private readonly categoryRepo: CategoryRepo,
     @InjectRepository(DiscountEntity)
@@ -26,16 +29,29 @@ export class ProductService {
     private readonly nestedCategoryRepo: NestedCategoryRepo,
   ) {}
   async create(body: CreateProductDto) {
-    const { catalog_id, category_id, discount_id, nested_category_id } = body;
+    const {
+      catalog_id,
+      category_id,
+      discount_id,
+      nested_category_id,
+      brand_id,
+    } = body;
 
     const findCatalog = await this.catalogRepo.findOneBy({ id: catalog_id });
+    const findBrand = await this.brandRepo.findOneBy({ id: brand_id });
     const findCategory = await this.categoryRepo.findOneBy({ id: category_id });
     const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
       id: nested_category_id,
     });
     const findDiscount = await this.discountRepo.findOneBy({ id: discount_id });
 
-    if (!findCatalog || !findCategory || !findNestedCategory || !findDiscount) {
+    if (
+      !findCatalog ||
+      !findCategory ||
+      !findNestedCategory ||
+      !findDiscount ||
+      !findBrand
+    ) {
       throw new HttpException('IDs do not exist. Check the IDs first!', 400);
     }
 
@@ -46,7 +62,14 @@ export class ProductService {
 
   async findAll() {
     const data = await this.productRepo.find({
-      relations: ['banners', 'categories'],
+      relations: [
+        'discount',
+        'category',
+        'nested_category',
+        'brand',
+        'catalog',
+        'product_infos',
+      ],
     });
 
     return { message: 'success', data };

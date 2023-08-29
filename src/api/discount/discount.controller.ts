@@ -10,7 +10,9 @@ import {
 import { DiscountService } from './discount.service';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Discounts')
 @Controller('discount')
 export class DiscountController {
   constructor(private readonly discountService: DiscountService) {}

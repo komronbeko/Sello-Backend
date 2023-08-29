@@ -6,12 +6,12 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
+  // UseGuards,
 } from '@nestjs/common';
 import { BannerService } from './banner.service';
 import { CreateBannerDto } from './dto/create-banner.dto';
 import { UpdateBannerDto } from './dto/update-banner.dto';
-import { isAdminGuard } from 'src/common/guards/is-admin.guard';
+// import { isAdminGuard } from 'src/common/guards/is-admin.guard';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Banners')

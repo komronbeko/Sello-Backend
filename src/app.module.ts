@@ -21,6 +21,8 @@ import { PartnerModule } from './api/partner/partner.module';
 import { ProductInfoModule } from './api/product-info/product-info.module';
 import { ProductModule } from './api/product/product.module';
 import { UserAddressModule } from './api/user-address/user-address.module';
+import { PostamatModule } from './api/postamat/postamat.module';
+import { DeliveryModule } from './api/delivery/delivery.module';
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { UserAddressModule } from './api/user-address/user-address.module';
     ProductInfoModule,
     ProductModule,
     UserAddressModule,
+    PostamatModule,
+    DeliveryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

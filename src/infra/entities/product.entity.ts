@@ -11,9 +11,8 @@ import { CategoryEntity } from './category.entity';
 import { NestedCategoryEntity } from './nested-category.entity';
 import { BrandEntity } from './brand.entity';
 import { BaseEntity } from './base.entity';
-// import { LikeEntity } from './like.entity';
-// import { CartEntity } from './cart.entity';
-// import { OrderEntity } from './order.entity';
+import { LikeEntity } from './like.entity';
+import { CartEntity } from './cart.entity';
 import { ProductInfoEntity } from './product-info.entity';
 import { CatalogEntity } from './catalog.entity';
 
@@ -57,7 +56,7 @@ export class ProductEntity extends BaseEntity {
   category_id: number;
   
   @Column({ nullable: false,})
-  nestedcategory_id: number;
+  nested_category_id: number;
 
   @Column({ nullable: false,})
   brand_id: number;
@@ -90,13 +89,10 @@ export class ProductEntity extends BaseEntity {
 
   @OneToMany(() => ProductInfoEntity, (productInfo) => productInfo.product)
   product_infos: ProductInfoEntity[];
+ 
+  @OneToMany(() => LikeEntity, (like) => like.product)
+  likes: LikeEntity[];
 
-//   @OneToMany(() => LikeEntity, (like) => like.product)
-//   likes: LikeEntity[];
-
-//   @OneToMany(() => CartEntity, (cart) => cart.product)
-//   carts: CartEntity[];
-
-//   @OneToMany(() => OrderEntity, (order) => order.product)
-//   orders: OrderEntity[];
+  @OneToMany(() => CartEntity, (cart) => cart.product)
+  carts: CartEntity[];
 }

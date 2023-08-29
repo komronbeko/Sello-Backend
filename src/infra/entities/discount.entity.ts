@@ -5,13 +5,12 @@ import { ProductEntity } from './product.entity';
 
 @Entity({ name: 'discounts' })
 export class DiscountEntity extends BaseEntity {
-  @Column({ nullable: false, type: 'numeric' })
+  @Column({ nullable: false })
   rate: number;
 
-  @Column({ nullable: false, type: 'date' })
-  will_end: Date;
+  @Column({ nullable: false, default: true })
+  is_active: boolean;
 
-  
   @OneToMany(() => ProductEntity, (product) => product.discount)
   products: ProductEntity[];
 }

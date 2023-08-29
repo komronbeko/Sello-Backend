@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { BaseEntity } from './base.entity';
+import { DeliveryEntity } from './delivery.entity';
 
 @Entity({ name: 'user_addresses' })
 export class UserAddressEntity extends BaseEntity {
@@ -18,7 +19,7 @@ export class UserAddressEntity extends BaseEntity {
   apartment: string;
 
   @Column({ nullable: false })
-  zip_code: number;
+  zip_code: string;
 
   @Column({ nullable: false })
   user_id: number;
@@ -26,4 +27,8 @@ export class UserAddressEntity extends BaseEntity {
   @ManyToOne(() => UserEntity, (user) => user.userAddresses)
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
+
+  
+  @OneToMany(() => DeliveryEntity, delivery => delivery.user_address)
+  deliveries: DeliveryEntity[]
 }

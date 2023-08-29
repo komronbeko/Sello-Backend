@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
 import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
-// import { CartEntity } from './cart.entity';
-// import { LikeEntity } from './like.entity';
+import { CartEntity } from './cart.entity';
+import { LikeEntity } from './like.entity';
 import { NotificationEntity } from './notification.entity';
-// import { OrderEntity } from './order.entity';
+import { OrderEntity } from './order.entity';
 import { UserAddressEntity } from './user-adress.entity';
 
 
@@ -40,14 +40,14 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   gender: string;
 
-  // @OneToMany(() => CartEntity, (cart) => cart.user)
-  // carts: CartEntity[];
+  @OneToMany(() => CartEntity, (cart) => cart.user)
+  carts: CartEntity[];
 
-  // @OneToMany(() => LikeEntity, (like) => like.user)
-  // likes: LikeEntity[];
+  @OneToMany(() => LikeEntity, (like) => like.user)
+  likes: LikeEntity[];
 
-  // @OneToMany(() => OrderEntity, (order) => order.user)
-  // orders: OrderEntity[];
+  @OneToMany(() => OrderEntity, (order) => order.user)
+  orders: OrderEntity[];
 
   @OneToMany(() => NotificationEntity, (notification) => notification.user)
   notifications: NotificationEntity[];

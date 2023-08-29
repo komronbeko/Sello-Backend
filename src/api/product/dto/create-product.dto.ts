@@ -128,4 +128,12 @@ export class CreateProductDto {
   @IsNumber()
   @IsOptional()
   discount_id: number;
+
+  @ApiProperty({
+    description: 'the id of brand by which the product was made',
+    default: 1,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  brand_id: number;
 }

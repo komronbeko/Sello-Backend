@@ -28,19 +28,19 @@ export class CreateUserAddressDto {
 
   @ApiProperty({
     description: 'the apartment number or name',
-    default: 'technology',
+    default: '15A',
   })
   @IsString()
   @IsNotEmpty()
   apartment: string;
 
   @ApiProperty({
-    description: 'addressname',
-    default: 'technology',
+    description: 'Address name',
+    default: '110100',
   })
   @IsString()
   @IsNotEmpty()
-  zip_code: number;
+  zip_code: string;
 
   @ApiProperty({
     description: 'id of user which address links',

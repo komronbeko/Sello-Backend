@@ -1,21 +1,27 @@
 /* eslint-disable prettier/prettier */
-// import { BaseEntity, Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-// import { UserEntity } from './user.entity';
-// import { ProductEntity } from './product.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { UserEntity } from './user.entity';
+import { CartEntity } from './cart.entity';
+import { BaseEntity } from './base.entity';
 
-// @Entity({ name: 'orders' })
-// export class OrderEntity extends BaseEntity {
-//   @ManyToOne(() => UserEntity, (user) => user.orders)
-//   @JoinColumn({ name: 'user_id' })
-//   user: UserEntity;
+@Entity({ name: 'orders' })
+export class OrderEntity extends BaseEntity {
+  @Column({ nullable: false })
+  cost: number;
 
-//   @ManyToOne(() => ProductEntity, (product) => product.orders)
-//   @JoinColumn({ name: 'product_id' })
-//   product: ProductEntity;
+  @Column({ nullable: false })
+  secret_code: string;
 
-//   @Column({ nullable: false })
-//   status: string;
+  @Column({ nullable: false })
+  status: string;
 
-//   @Column({ nullable: false })
-//   delivery_cost: number;
-// }
+  @Column({ nullable: false })
+  user_id: number;
+
+  @OneToMany(() => CartEntity, (cart) => cart.order)
+  carts: CartEntity[];
+
+  @ManyToOne(() => UserEntity, (user) => user.orders)
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
+}
