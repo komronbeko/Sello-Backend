@@ -27,9 +27,9 @@ export class ProductInfoController {
     return this.productInfoService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productInfoService.findOne(+id);
+  @Get(':product_id')
+  infosForProduct(@Param('product_id') product_id: string) {
+    return this.productInfoService.infosForProduct(+product_id);
   }
 
   @Patch(':id')

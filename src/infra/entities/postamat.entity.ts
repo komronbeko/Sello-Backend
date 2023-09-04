@@ -11,6 +11,6 @@ export class PostamatEntity extends BaseEntity {
   @Column({ nullable: false, })
   address: string;
 
-  @OneToMany(() => DeliveryEntity, delivery => delivery.postamat)
+  @OneToMany(() => DeliveryEntity, delivery => delivery.postamat, {cascade: true})
   deliveries: DeliveryEntity[]
 }

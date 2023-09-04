@@ -25,6 +25,9 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: false })
   password: string;
 
+  @Column({ nullable: false, default: false })
+  is_verified: boolean;
+
   @Column({ nullable: true })
   phone_number: string;
 
@@ -40,18 +43,18 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   gender: string;
 
-  @OneToMany(() => CartEntity, (cart) => cart.user)
+  @OneToMany(() => CartEntity, (cart) => cart.user, {cascade: true})
   carts: CartEntity[];
 
-  @OneToMany(() => LikeEntity, (like) => like.user)
+  @OneToMany(() => LikeEntity, (like) => like.user, {cascade: true})
   likes: LikeEntity[];
 
-  @OneToMany(() => OrderEntity, (order) => order.user)
+  @OneToMany(() => OrderEntity, (order) => order.user, {cascade: true})
   orders: OrderEntity[];
 
-  @OneToMany(() => NotificationEntity, (notification) => notification.user)
+  @OneToMany(() => NotificationEntity, (notification) => notification.user, {cascade: true})
   notifications: NotificationEntity[];
 
-  @OneToMany(() => UserAddressEntity, (userAddress) => userAddress.user)
+  @OneToMany(() => UserAddressEntity, (userAddress) => userAddress.user, {cascade: true})
   userAddresses: UserAddressEntity[];
 }

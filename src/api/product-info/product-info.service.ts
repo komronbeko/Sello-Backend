@@ -35,12 +35,10 @@ export class ProductInfoService {
     return { message: 'success', data };
   }
 
-  async findOne(id: number) {
-    const findProductInfo = await this.categoryRepo.findOneBy({ id });
+  async infosForProduct(product_id: number) {
+    const findProductInfos = await this.categoryRepo.findBy({ product_id });
 
-    if (!findProductInfo) throw new HttpException('ProductInfo not found', 400);
-
-    return { message: 'success', data: findProductInfo };
+    return { message: 'success', data: findProductInfos };
   }
 
   async update(id: number, body: UpdateProductInfoDto) {

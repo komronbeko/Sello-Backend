@@ -18,6 +18,11 @@ export class LikeService {
   ) {}
   async create(body: CreateLikeDto) {
     const { user_id, product_id } = body;
+
+    const findLike = await this.likeRepo.findOneBy({ user_id, product_id });
+
+    if (findLike) throw new HttpException('Product already liked', 400);
+
     const findUser = await this.userRepo.findOneBy({
       id: user_id,
     });
@@ -44,21 +49,28 @@ export class LikeService {
     return { message: 'Success', data };
   }
 
-  async findOne(id: number) {
-    const findLike = await this.likeRepo.findOneBy({ id });
+  async getUserLikes(user_id: number) {
+    const data = await this.likeRepo.find({
+      where: { user_id },
+      relations: ['user', 'product'],
+    });
 
-    if (!findLike) throw new HttpException('Like not found', 400);
-
-    return { message: 'Success', data: findLike };
+    return { message: 'Success', data };
   }
 
   async remove(id: number) {
-    const findLike = await this.likeRepo.findOneBy({ id });
+    const findLike = await this.likeRepo.findOneBy({ product_id: id });
 
     if (!findLike) throw new HttpException('Like not found', 400);
 
-    await this.likeRepo.delete(id);
+    await this.likeRepo.delete({ product_id: id });
 
     return { message: 'Success' };
+  }
+
+  async removeAll(user_id: number) {
+    await this.likeRepo.delete({ user_id });
+
+    return { message: 'Deleted Succesfully' };
   }
 }

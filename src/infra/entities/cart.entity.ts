@@ -19,8 +19,12 @@ export class CartEntity extends BaseEntity {
   @Column({ nullable: false })
   product_id: number;
 
+  @Column({ nullable: false, default: 0 })
+  count: number;
+  
   @Column({ nullable: true })
   order_id: number;
+
 
   @ManyToOne(() => UserEntity, (user) => user.carts)
   @JoinColumn({ name: 'user_id' })

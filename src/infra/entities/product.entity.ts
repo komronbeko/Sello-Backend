@@ -34,6 +34,7 @@ export class ProductEntity extends BaseEntity {
   @Column({ nullable: false })
   photo: string;
 
+
   @Column({ nullable: false, default: false })
   delivery: boolean;
 
@@ -49,7 +50,10 @@ export class ProductEntity extends BaseEntity {
   @Column({ nullable: false, default: false })
   unpacked: boolean;
 
-  @Column({ nullable: false,})
+  @Column({ nullable: true,})
+  discount_rate: number;
+
+  @Column({ nullable: true,})
   discount_id: number;
 
   @Column({ nullable: false,})
@@ -58,7 +62,7 @@ export class ProductEntity extends BaseEntity {
   @Column({ nullable: false,})
   nested_category_id: number;
 
-  @Column({ nullable: false,})
+  @Column({ nullable: true,})
   brand_id: number;
 
   @Column({ nullable: false,})
@@ -76,7 +80,7 @@ export class ProductEntity extends BaseEntity {
     () => NestedCategoryEntity,
     (nestedCategory) => nestedCategory.products,
   )
-  @JoinColumn({ name: 'nestedcategory_id' })
+  @JoinColumn({ name: 'nested_category_id' })
   nested_category: NestedCategoryEntity;
 
   @ManyToOne(() => BrandEntity, (brand) => brand.products)
@@ -87,12 +91,12 @@ export class ProductEntity extends BaseEntity {
   @JoinColumn({ name: 'catalog_id' })
   catalog: CatalogEntity;
 
-  @OneToMany(() => ProductInfoEntity, (productInfo) => productInfo.product)
+  @OneToMany(() => ProductInfoEntity, (productInfo) => productInfo.product, {cascade: true})
   product_infos: ProductInfoEntity[];
  
-  @OneToMany(() => LikeEntity, (like) => like.product)
+  @OneToMany(() => LikeEntity, (like) => like.product, {cascade: true})
   likes: LikeEntity[];
 
-  @OneToMany(() => CartEntity, (cart) => cart.product)
+  @OneToMany(() => CartEntity, (cart) => cart.product, {cascade: true})
   carts: CartEntity[];
 }

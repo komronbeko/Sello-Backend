@@ -11,6 +11,6 @@ export class DiscountEntity extends BaseEntity {
   @Column({ nullable: false, default: true })
   is_active: boolean;
 
-  @OneToMany(() => ProductEntity, (product) => product.discount)
+  @OneToMany(() => ProductEntity, (product) => product.discount, {cascade: true})
   products: ProductEntity[];
 }

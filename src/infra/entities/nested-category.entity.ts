@@ -18,6 +18,6 @@ export class NestedCategoryEntity  extends BaseEntity{
   @Column({ nullable: false })
   category_id: number;
  
-  @OneToMany(() => ProductEntity, (product) => product.nested_category)
+  @OneToMany(() => ProductEntity, (product) => product.nested_category, {cascade: true})
   products: ProductEntity[];
 }

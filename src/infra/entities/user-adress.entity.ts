@@ -29,6 +29,6 @@ export class UserAddressEntity extends BaseEntity {
   user: UserEntity;
 
   
-  @OneToMany(() => DeliveryEntity, delivery => delivery.user_address)
+  @OneToMany(() => DeliveryEntity, delivery => delivery.user_address, {cascade: true})
   deliveries: DeliveryEntity[]
 }

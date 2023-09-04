@@ -10,13 +10,13 @@ export class CatalogEntity extends BaseEntity {
   @Column({ nullable: false })
   name: string;
 
-  @OneToMany(()=> BannerEntity, banners => banners.catalog)
+  @OneToMany(()=> BannerEntity, banners => banners.catalog, {cascade: true})
   banners: BannerEntity[]
 
-  @OneToMany(()=> CategoryEntity, category => category.catalog)
-  categories: CatalogEntity[];
+  @OneToMany(()=> CategoryEntity, category => category.catalog, {cascade: true})
+  categories: CatalogEntity[]; 
 
-  @OneToMany(() => ProductEntity, (product) => product.catalog)
+  @OneToMany(() => ProductEntity, (product) => product.catalog, {cascade: true})
   products: ProductEntity[];
 }
 

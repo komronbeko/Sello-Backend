@@ -18,6 +18,6 @@ export class LocationEntity extends BaseEntity {
   working_hours: string;
 
   
-  @OneToMany(() => DeliveryEntity, delivery => delivery.location)
+  @OneToMany(() => DeliveryEntity, delivery => delivery.location, {cascade: true})
   deliveries: DeliveryEntity[]
 }

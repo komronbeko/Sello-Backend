@@ -26,9 +26,10 @@ export class CategoryEntity extends BaseEntity {
   @OneToMany(
     () => NestedCategoryEntity,
     (nestedCategory) => nestedCategory.category,
+    {cascade: true}
   )
   nestedCategories: NestedCategoryEntity[];
 
-  @OneToMany(() => ProductEntity, (product) => product.category)
+  @OneToMany(() => ProductEntity, (product) => product.category, {cascade: true})
   products: ProductEntity[];
 }

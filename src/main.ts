@@ -3,11 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
 
   app.setGlobalPrefix('api');
+
+  app.use('/uploads', express.static(process.cwd() + '/uploads'));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -26,8 +29,6 @@ async function bootstrap() {
 
   const PORT = +process.env.PORT;
 
-  await app.listen(PORT, () => {
-    console.log(`Listening on PORT ${PORT}`);
-  });
+  await app.listen(PORT);
 }
 bootstrap();

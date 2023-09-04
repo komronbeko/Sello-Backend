@@ -13,7 +13,7 @@ export class CreateCartDto {
     default: true,
   })
   @IsBoolean()
-  @IsNotEmpty()
+  @IsOptional()
   is_active: boolean;
 
   @ApiProperty({

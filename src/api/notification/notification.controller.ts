@@ -6,12 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @ApiTags('Notifications')
 @Controller('notification')
 export class NotificationController {

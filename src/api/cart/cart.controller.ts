@@ -6,12 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @ApiTags('Carts')
 @Controller('cart')
 export class CartController {
@@ -27,9 +30,9 @@ export class CartController {
     return this.cartService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartService.findOne(+id);
+  @Get(':user_id')
+  getUserCarts(@Param('user_id') user_id: string) {
+    return this.cartService.getUserCarts(+user_id);
   }
 
   @Patch(':id')
@@ -37,8 +40,23 @@ export class CartController {
     return this.cartService.update(+id, updateCartDto);
   }
 
+  @Patch('/count/minus/:id')
+  minusCount(@Param('id') id: string) {
+    return this.cartService.minusCount(+id);
+  }
+
+  @Patch('/count/plus/:id')
+  plusCount(@Param('id') id: string) {
+    return this.cartService.plusCount(+id);
+  }
+
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartService.remove(+id);
+  removeOne(@Param('id') id: string) {
+    return this.cartService.removeOne(+id);
+  }
+
+  @Delete('/all/:user_id')
+  removeAll(@Param('user_id') user_id: string) {
+    return this.cartService.removeAll(+user_id);
   }
 }

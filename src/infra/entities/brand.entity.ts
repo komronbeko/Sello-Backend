@@ -12,6 +12,6 @@ export class BrandEntity extends BaseEntity {
   @Column({ nullable: false })
   photo: string;
 
-  @OneToMany(() => ProductEntity, (product) => product.brand)
+  @OneToMany(() => ProductEntity, (product) => product.brand, {cascade: true})
   products: ProductEntity[];
 }

@@ -6,19 +6,22 @@ import { BaseEntity } from './base.entity';
 
 @Entity({ name: 'orders' })
 export class OrderEntity extends BaseEntity {
-  @Column({ nullable: false })
+  @Column({ nullable: false})
   cost: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false }) 
   secret_code: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, default: 'new' })
   status: string;
+
+  @Column({ nullable: false })
+  location: string;
 
   @Column({ nullable: false })
   user_id: number;
 
-  @OneToMany(() => CartEntity, (cart) => cart.order)
+  @OneToMany(() => CartEntity, (cart) => cart.order, { cascade: true })
   carts: CartEntity[];
 
   @ManyToOne(() => UserEntity, (user) => user.orders)

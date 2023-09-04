@@ -14,6 +14,7 @@ import { NestedCategoryEntity } from 'src/infra/entities/nested-category.entity'
 import { NestedCategoryRepo } from 'src/infra/repos/nested-category.repo';
 import { BrandRepo } from 'src/infra/repos/brand.repo';
 import { BrandEntity } from 'src/infra/entities/brand.entity';
+import { FindOneOptions } from 'typeorm';
 
 @Injectable()
 export class ProductService {
@@ -55,6 +56,8 @@ export class ProductService {
       throw new HttpException('IDs do not exist. Check the IDs first!', 400);
     }
 
+    body.discount_rate = findDiscount.rate;
+
     const newProduct = await this.productRepo.create(body);
     await this.productRepo.save(newProduct);
     return { message: 'success', data: newProduct };
@@ -69,6 +72,8 @@ export class ProductService {
         'brand',
         'catalog',
         'product_infos',
+        'likes',
+        'carts',
       ],
     });
 
@@ -76,7 +81,17 @@ export class ProductService {
   }
 
   async findOne(id: number) {
-    const findProduct = await this.productRepo.findOneBy({ id });
+    const findProduct = await this.productRepo.findOne({
+      where: { id },
+      relations: [
+        'discount',
+        'category',
+        'nested_category',
+        'brand',
+        'catalog',
+        'product_infos',
+      ],
+    } as FindOneOptions);
 
     if (!findProduct) throw new HttpException('Product not found', 400);
 
