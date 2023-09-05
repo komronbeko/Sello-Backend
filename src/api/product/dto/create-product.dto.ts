@@ -127,14 +127,6 @@ export class CreateProductDto {
   })
   @IsNumber()
   @IsOptional()
-  discount_rate: number;
-
-  @ApiProperty({
-    description: 'the id of discount the product has',
-    default: 1,
-  })
-  @IsNumber()
-  @IsOptional()
   discount_id: number;
 
   @ApiProperty({

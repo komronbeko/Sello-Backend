@@ -43,7 +43,7 @@ export class LikeService {
 
   async findAll() {
     const data = await this.likeRepo.find({
-      relations: ['user', 'product'],
+      relations: ['user', 'product.discount'],
     });
 
     return { message: 'Success', data };
@@ -52,7 +52,7 @@ export class LikeService {
   async getUserLikes(user_id: number) {
     const data = await this.likeRepo.find({
       where: { user_id },
-      relations: ['user', 'product'],
+      relations: ['user', 'product.discount'],
     });
 
     return { message: 'Success', data };

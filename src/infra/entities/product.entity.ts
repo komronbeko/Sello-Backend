@@ -34,7 +34,6 @@ export class ProductEntity extends BaseEntity {
   @Column({ nullable: false })
   photo: string;
 
-
   @Column({ nullable: false, default: false })
   delivery: boolean;
 
@@ -49,9 +48,6 @@ export class ProductEntity extends BaseEntity {
 
   @Column({ nullable: false, default: false })
   unpacked: boolean;
-
-  @Column({ nullable: true,})
-  discount_rate: number;
 
   @Column({ nullable: true,})
   discount_id: number;

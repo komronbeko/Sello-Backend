@@ -60,7 +60,7 @@ export class CartService {
 
   async findAll() {
     const data = await this.cartRepo.find({
-      relations: ['user', 'product', 'order'],
+      relations: ['user', 'product.discount', 'order'],
     });
 
     return { message: 'Success', data };
@@ -69,7 +69,7 @@ export class CartService {
   async getUserCarts(user_id: number) {
     const data = await this.cartRepo.find({
       where: { user_id },
-      relations: ['user', 'product', 'order'],
+      relations: ['user', 'product.discount', 'order'],
     });
 
     return { message: 'Success', data };

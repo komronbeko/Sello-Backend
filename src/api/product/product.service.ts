@@ -30,13 +30,7 @@ export class ProductService {
     private readonly nestedCategoryRepo: NestedCategoryRepo,
   ) {}
   async create(body: CreateProductDto) {
-    const {
-      catalog_id,
-      category_id,
-      discount_id,
-      nested_category_id,
-      brand_id,
-    } = body;
+    const { catalog_id, category_id, nested_category_id, brand_id } = body;
 
     const findCatalog = await this.catalogRepo.findOneBy({ id: catalog_id });
     const findBrand = await this.brandRepo.findOneBy({ id: brand_id });
@@ -44,19 +38,10 @@ export class ProductService {
     const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
       id: nested_category_id,
     });
-    const findDiscount = await this.discountRepo.findOneBy({ id: discount_id });
 
-    if (
-      !findCatalog ||
-      !findCategory ||
-      !findNestedCategory ||
-      !findDiscount ||
-      !findBrand
-    ) {
+    if (!findCatalog || !findCategory || !findNestedCategory || !findBrand) {
       throw new HttpException('IDs do not exist. Check the IDs first!', 400);
     }
-
-    body.discount_rate = findDiscount.rate;
 
     const newProduct = await this.productRepo.create(body);
     await this.productRepo.save(newProduct);

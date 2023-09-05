@@ -30,7 +30,9 @@ export class CategoryService {
   }
 
   async findAll() {
-    const data = await this.categoryRepo.find({ relations: ['catalog'] });
+    const data = await this.categoryRepo.find({
+      relations: ['catalog', 'nestedCategories'],
+    });
 
     return { message: 'success', data };
   }

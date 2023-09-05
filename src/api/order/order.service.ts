@@ -39,7 +39,7 @@ export class OrderService {
     if (!findUser) throw new HttpException('User not found', 400);
     if (!findUserCarts.length) throw new HttpException('Cart not found', 400);
 
-    if (findUser.money_amount < cost)
+    if (!findUser.money_amount || findUser.money_amount < cost)
       throw new HttpException('Not enough money in the cash', 400);
 
     await this.userRepo.update(user_id, {

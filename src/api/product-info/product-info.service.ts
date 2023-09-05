@@ -30,7 +30,9 @@ export class ProductInfoService {
   }
 
   async findAll() {
-    const data = await this.categoryRepo.find({ relations: ['product'] });
+    const data = await this.categoryRepo.find({
+      relations: ['product.discount'],
+    });
 
     return { message: 'success', data };
   }
