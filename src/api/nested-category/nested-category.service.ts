@@ -17,53 +17,79 @@ export class NestedCategoryService {
   ) {}
 
   async create(body: CreateNestedCategoryDto) {
-    const findCategory = await this.categoryRepo.findOneBy({
-      id: body.category_id,
-    });
+    try {
+      const findCategory = await this.categoryRepo.findOneBy({
+        id: body.category_id,
+      });
 
-    if (!findCategory) throw new HttpException('Category ot found', 400);
+      if (!findCategory) throw new HttpException('Category ot found', 400);
 
-    const newNestedCategory = await this.nestedCategoryRepo.create(body);
-    await this.nestedCategoryRepo.save(newNestedCategory);
+      const newNestedCategory = await this.nestedCategoryRepo.create(body);
+      await this.nestedCategoryRepo.save(newNestedCategory);
 
-    return { message: 'success', data: newNestedCategory };
+      return { message: 'success', data: newNestedCategory };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const data = await this.nestedCategoryRepo.find({
-      relations: ['category'],
-    });
+    try {
+      const data = await this.nestedCategoryRepo.find({
+        relations: ['category'],
+      });
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findNestedCategory = await this.nestedCategoryRepo.findOneBy({ id });
+    try {
+      const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
+        id,
+      });
 
-    if (!findNestedCategory)
-      throw new HttpException('NestedCategory not found', 400);
+      if (!findNestedCategory)
+        throw new HttpException('NestedCategory not found', 400);
 
-    return { message: 'success', data: findNestedCategory };
+      return { message: 'success', data: findNestedCategory };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateNestedCategoryDto) {
-    const findNestedCategory = await this.nestedCategoryRepo.findOneBy({ id });
+    try {
+      const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
+        id,
+      });
 
-    if (!findNestedCategory)
-      throw new HttpException('NestedCategory not found', 400);
+      if (!findNestedCategory)
+        throw new HttpException('NestedCategory not found', 400);
 
-    await this.nestedCategoryRepo.update(id, body);
-    return { message: 'success' };
+      await this.nestedCategoryRepo.update(id, body);
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findNestedCategory = await this.nestedCategoryRepo.findOneBy({ id });
+    try {
+      const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
+        id,
+      });
 
-    if (!findNestedCategory)
-      throw new HttpException('NestedCategory not found', 400);
+      if (!findNestedCategory)
+        throw new HttpException('NestedCategory not found', 400);
 
-    await this.nestedCategoryRepo.delete(id);
+      await this.nestedCategoryRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

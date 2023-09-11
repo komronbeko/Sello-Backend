@@ -32,12 +32,4 @@ export class CreateCartDto {
   @IsNumber()
   @IsNotEmpty()
   product_id: number;
-
-  @ApiProperty({
-    description: 'id of user who powns the cart',
-    default: 1,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  user_id: number;
 }

@@ -12,43 +12,63 @@ export class PostamatService {
     private readonly postamatRepo: PostamatRepo,
   ) {}
   async create(body: CreatePostamatDto) {
-    const newPostamat = await this.postamatRepo.create(body);
-    await this.postamatRepo.save(newPostamat);
-    return { message: 'success', data: newPostamat };
+    try {
+      const newPostamat = await this.postamatRepo.create(body);
+      await this.postamatRepo.save(newPostamat);
+      return { message: 'success', data: newPostamat };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const data = await this.postamatRepo.find({
-      relations: ['banners', 'categories'],
-    });
+    try {
+      const data = await this.postamatRepo.find({
+        relations: ['banners', 'categories'],
+      });
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findPostamat = await this.postamatRepo.findOneBy({ id });
+    try {
+      const findPostamat = await this.postamatRepo.findOneBy({ id });
 
-    if (!findPostamat) throw new HttpException('Postamat not found', 400);
+      if (!findPostamat) throw new HttpException('Postamat not found', 400);
 
-    return { message: 'success', data: findPostamat };
+      return { message: 'success', data: findPostamat };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdatePostamatDto) {
-    const findPostamat = await this.postamatRepo.findOneBy({ id });
+    try {
+      const findPostamat = await this.postamatRepo.findOneBy({ id });
 
-    if (!findPostamat) throw new HttpException('Postamat not found', 400);
+      if (!findPostamat) throw new HttpException('Postamat not found', 400);
 
-    await this.postamatRepo.update(id, body);
-    return { message: 'success' };
+      await this.postamatRepo.update(id, body);
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findPostamat = await this.postamatRepo.findOneBy({ id });
+    try {
+      const findPostamat = await this.postamatRepo.findOneBy({ id });
 
-    if (!findPostamat) throw new HttpException('Postamat not found', 400);
+      if (!findPostamat) throw new HttpException('Postamat not found', 400);
 
-    await this.postamatRepo.delete(id);
+      await this.postamatRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

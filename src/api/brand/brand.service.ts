@@ -10,45 +10,66 @@ export class BrandService {
   constructor(
     @InjectRepository(BrandEntity) private readonly brandRepo: BrandRepo,
   ) {}
+
   async create(body: CreateBrandDto) {
-    const newBrand = await this.brandRepo.create(body);
+    try {
+      const newBrand = await this.brandRepo.create(body);
 
-    await this.brandRepo.save(newBrand);
+      await this.brandRepo.save(newBrand);
 
-    return { message: 'success', newBrand };
+      return { message: 'success', newBrand };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const data = await this.brandRepo.find({});
+    try {
+      const data = await this.brandRepo.find({});
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const finndBrand = await this.brandRepo.findOneBy({ id });
+    try {
+      const finndBrand = await this.brandRepo.findOneBy({ id });
 
-    if (!finndBrand) throw new HttpException('Brand not found', 400);
+      if (!finndBrand) throw new HttpException('Brand not found', 400);
 
-    return { message: 'success', data: finndBrand };
+      return { message: 'success', data: finndBrand };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateBrandDto) {
-    const finndBrand = await this.brandRepo.findOneBy({ id });
+    try {
+      const finndBrand = await this.brandRepo.findOneBy({ id });
 
-    if (!finndBrand) throw new HttpException('Brand not found', 400);
+      if (!finndBrand) throw new HttpException('Brand not found', 400);
 
-    await this.brandRepo.update(id, body);
+      await this.brandRepo.update(id, body);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const finndBrand = await this.brandRepo.findOneBy({ id });
+    try {
+      const finndBrand = await this.brandRepo.findOneBy({ id });
 
-    if (!finndBrand) throw new HttpException('Brand not found', 400);
+      if (!finndBrand) throw new HttpException('Brand not found', 400);
 
-    await this.brandRepo.delete(id);
+      await this.brandRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

@@ -31,75 +31,97 @@ export class ProductService {
     private readonly nestedCategoryRepo: NestedCategoryRepo,
   ) {}
   async create(body: CreateProductDto) {
-    const { catalog_id, category_id, nested_category_id, brand_id } = body;
+    try {
+      const { catalog_id, category_id, nested_category_id, brand_id } = body;
 
-    const findCatalog = await this.catalogRepo.findOneBy({ id: catalog_id });
-    const findBrand = await this.brandRepo.findOneBy({ id: brand_id });
-    const findCategory = await this.categoryRepo.findOneBy({ id: category_id });
-    const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
-      id: nested_category_id,
-    });
+      const findCatalog = await this.catalogRepo.findOneBy({ id: catalog_id });
+      const findBrand = await this.brandRepo.findOneBy({ id: brand_id });
+      const findCategory = await this.categoryRepo.findOneBy({
+        id: category_id,
+      });
+      const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
+        id: nested_category_id,
+      });
 
-    if (!findCatalog || !findCategory || !findNestedCategory || !findBrand) {
-      throw new HttpException('IDs do not exist. Check the IDs first!', 400);
+      if (!findCatalog || !findCategory || !findNestedCategory || !findBrand) {
+        throw new HttpException('IDs do not exist. Check the IDs first!', 400);
+      }
+
+      const newProduct = await this.productRepo.create(body);
+      await this.productRepo.save(newProduct);
+      return { message: 'success', data: newProduct };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
     }
-
-    const newProduct = await this.productRepo.create(body);
-    await this.productRepo.save(newProduct);
-    return { message: 'success', data: newProduct };
   }
 
   async findAll() {
-    const data = await this.productRepo.find({
-      relations: [
-        'discount',
-        'category',
-        'nested_category',
-        'brand',
-        'catalog',
-        'product_infos',
-        'likes',
-        'carts',
-      ],
-    });
+    try {
+      const data = await this.productRepo.find({
+        relations: [
+          'discount',
+          'category',
+          'nested_category',
+          'brand',
+          'catalog',
+          'product_infos',
+          'likes',
+          'carts',
+        ],
+      });
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findProduct = await this.productRepo.findOne({
-      where: { id },
-      relations: [
-        'discount',
-        'category',
-        'nested_category',
-        'brand',
-        'catalog',
-        'product_infos',
-      ],
-    } as FindOneOptions);
+    try {
+      const findProduct = await this.productRepo.findOne({
+        where: { id },
+        relations: [
+          'discount',
+          'category',
+          'nested_category',
+          'brand',
+          'catalog',
+          'product_infos',
+        ],
+      } as FindOneOptions);
 
-    if (!findProduct) throw new HttpException('Product not found', 400);
+      if (!findProduct) throw new HttpException('Product not found', 400);
 
-    return { message: 'success', data: findProduct };
+      return { message: 'success', data: findProduct };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateProductDto) {
-    const findProduct = await this.productRepo.findOneBy({ id });
+    try {
+      const findProduct = await this.productRepo.findOneBy({ id });
 
-    if (!findProduct) throw new HttpException('Product not found', 400);
+      if (!findProduct) throw new HttpException('Product not found', 400);
 
-    await this.productRepo.update(id, body);
-    return { message: 'success' };
+      await this.productRepo.update(id, body);
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findProduct = await this.productRepo.findOneBy({ id });
+    try {
+      const findProduct = await this.productRepo.findOneBy({ id });
 
-    if (!findProduct) throw new HttpException('Product not found', 400);
+      if (!findProduct) throw new HttpException('Product not found', 400);
 
-    await this.productRepo.delete(id);
+      await this.productRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

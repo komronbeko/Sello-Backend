@@ -28,10 +28,10 @@ export class AuthGuard implements CanActivate {
       const verified = this.jwt.verify(token, {
         secret: process.env.JWT_SEC_KEY,
       });
-
-
-      request.userId = verified.id;
-
+      
+      
+      request.userId = verified.id;      
+ 
       return true;
     } catch (error) {      
       throw new HttpException('Invlaid token', 403);

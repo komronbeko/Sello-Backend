@@ -12,32 +12,48 @@ export class DiscountService {
     private readonly discountRepo: DiscountRepo,
   ) {}
   async create(body: CreateDiscountDto) {
-    const newDiscount = await this.discountRepo.create(body);
-    await this.discountRepo.save(newDiscount);
-    return { message: 'success', data: newDiscount };
+    try {
+      const newDiscount = await this.discountRepo.create(body);
+      await this.discountRepo.save(newDiscount);
+      return { message: 'success', data: newDiscount };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const data = await this.discountRepo.find();
+    try {
+      const data = await this.discountRepo.find();
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findDiscount = await this.discountRepo.findOneBy({ id });
+    try {
+      const findDiscount = await this.discountRepo.findOneBy({ id });
 
-    if (!findDiscount) throw new HttpException('Discount not found', 400);
+      if (!findDiscount) throw new HttpException('Discount not found', 400);
 
-    return { message: 'success', data: findDiscount };
+      return { message: 'success', data: findDiscount };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateDiscountDto) {
-    const findDiscount = await this.discountRepo.findOneBy({ id });
+    try {
+      const findDiscount = await this.discountRepo.findOneBy({ id });
 
-    if (!findDiscount) throw new HttpException('Discount not found', 400);
+      if (!findDiscount) throw new HttpException('Discount not found', 400);
 
-    await this.discountRepo.update(id, body);
-    return { message: 'success' };
+      await this.discountRepo.update(id, body);
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {

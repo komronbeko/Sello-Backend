@@ -17,48 +17,71 @@ export class UserAddressService {
   ) {}
 
   async create(body: CreateUserAddressDto) {
-    const findUser = await this.userRepo.findOneBy({
-      id: body.user_id,
-    });
+    try {
+      const findUser = await this.userRepo.findOneBy({
+        id: body.user_id,
+      });
 
-    if (!findUser) throw new HttpException('User ot found', 400);
+      if (!findUser) throw new HttpException('User ot found', 400);
 
-    const newUserAddress = await this.userAddressRepo.create(body);
-    await this.userAddressRepo.save(newUserAddress);
+      const newUserAddress = await this.userAddressRepo.create(body);
+      await this.userAddressRepo.save(newUserAddress);
 
-    return { message: 'success', data: newUserAddress };
+      return { message: 'success', data: newUserAddress };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const data = await this.userAddressRepo.find({ relations: ['user'] });
+    try {
+      const data = await this.userAddressRepo.find({ relations: ['user'] });
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findUserAddress = await this.userAddressRepo.findOneBy({ id });
+    try {
+      const findUserAddress = await this.userAddressRepo.findOneBy({ id });
 
-    if (!findUserAddress) throw new HttpException('UserAddress not found', 400);
+      if (!findUserAddress)
+        throw new HttpException('UserAddress not found', 400);
 
-    return { message: 'success', data: findUserAddress };
+      return { message: 'success', data: findUserAddress };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateUserAddressDto) {
-    const findUserAddress = await this.userAddressRepo.findOneBy({ id });
+    try {
+      const findUserAddress = await this.userAddressRepo.findOneBy({ id });
 
-    if (!findUserAddress) throw new HttpException('UserAddress not found', 400);
+      if (!findUserAddress)
+        throw new HttpException('UserAddress not found', 400);
 
-    await this.userAddressRepo.update(id, body);
-    return { message: 'success' };
+      await this.userAddressRepo.update(id, body);
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findUserAddress = await this.userAddressRepo.findOneBy({ id });
+    try {
+      const findUserAddress = await this.userAddressRepo.findOneBy({ id });
 
-    if (!findUserAddress) throw new HttpException('UserAddress not found', 400);
+      if (!findUserAddress)
+        throw new HttpException('UserAddress not found', 400);
 
-    await this.userAddressRepo.delete(id);
+      await this.userAddressRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

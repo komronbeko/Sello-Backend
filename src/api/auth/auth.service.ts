@@ -34,126 +34,147 @@ export class AuthService {
   ) {}
 
   async adminLogin(loginDto: LoginDto) {
-    const { email, password } = loginDto;
+    try {
+      const { email, password } = loginDto;
 
-    const findAdmin = await this.adminsRepo.findOneBy({ email });
+      const findAdmin = await this.adminsRepo.findOneBy({ email });
 
-    if (!findAdmin) throw new ForbiddenException();
+      if (!findAdmin) throw new ForbiddenException();
 
-    const comparePass = await bcrypt.compare(password, findAdmin.password);
+      const comparePass = await bcrypt.compare(password, findAdmin.password);
 
-    if (!comparePass) throw new ForbiddenException();
+      if (!comparePass) throw new ForbiddenException();
 
-    const token = this.jwt.sign({ id: findAdmin.id });
+      const token = this.jwt.sign({ id: findAdmin.id });
 
-    return { message: 'success', data: token };
+      return { message: 'success', data: token };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async userLogin(loginDto: LoginDto) {
-    const { email, password } = loginDto;
+    try {
+      const { email, password } = loginDto;
 
-    const findUser = await this.usersRepo.findOneBy({ email });
+      const findUser = await this.usersRepo.findOneBy({ email });
 
-    if (!findUser) throw new ForbiddenException();
+      if (!findUser) throw new ForbiddenException();
 
-    const comparePass = await bcrypt.compare(password, findUser.password);
+      const comparePass = await bcrypt.compare(password, findUser.password);
 
-    if (!comparePass) throw new ForbiddenException();
+      if (!comparePass) throw new ForbiddenException();
 
-    const code: number = Math.floor(100000 + Math.random() * 900000);
+      const code: number = Math.floor(100000 + Math.random() * 900000);
 
-    const hashedCode = await bcrypt.hash(code.toString(), 12);
+      const hashedCode = await bcrypt.hash(code.toString(), 12);
 
-    const mailData = {
-      from: 'uzakovumar338@gmail.com',
-      to: email,
-      subject: 'Sello Online Magazine',
-      text: 'Verification',
-      html: `<b>Your verification code is: ${code}</b>`,
-    };
+      const mailData = {
+        from: 'uzakovumar338@gmail.com',
+        to: email,
+        subject: 'Sello Online Magazine',
+        text: 'Verification',
+        html: `<b>Your verification code is: ${code}</b>`,
+      };
 
-    const data = await transporter.sendMail(mailData);
+      const data = await transporter.sendMail(mailData);
 
-    return {
-      message: 'Verification code is sent to your eamil',
-      data: { code: hashedCode, user_id: findUser.id },
-    };
+      return {
+        message: 'Verification code is sent to your eamil',
+        data: { code: hashedCode, user_id: findUser.id },
+      };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async userRegister(registerDto: RegisterDto) {
-    const { username, email, password } = registerDto;
+    try {
+      const { username, email, password } = registerDto;
 
-    const code: number = Math.floor(100000 + Math.random() * 900000);
+      const code: number = Math.floor(100000 + Math.random() * 900000);
 
-    const hashedCode = await bcrypt.hash(code.toString(), 12);
+      const hashedCode = await bcrypt.hash(code.toString(), 12);
 
-    const mailData = {
-      from: 'uzakovumar338@gmail.com',
-      to: email,
-      subject: 'Sello Online Magazine',
-      text: 'Verification',
-      html: `<b>Your verification code is: ${code}</b>`,
-    };
-    const findUser = await this.usersRepo.findOne({
-      where: [{ username }, { email }],
-    } as FindOneOptions);
+      const mailData = {
+        from: 'uzakovumar338@gmail.com',
+        to: email,
+        subject: 'Sello Online Magazine',
+        text: 'Verification',
+        html: `<b>Your verification code is: ${code}</b>`,
+      };
+      const findUser = await this.usersRepo.findOne({
+        where: [{ username }, { email }],
+      } as FindOneOptions);
 
-    if (findUser) {
-      switch (findUser.is_verified) {
-        case true:
-          throw new HttpException('User alreaday exists', 403);
-        case false:
-          const data = await transporter.sendMail(mailData);
-          return {
-            message: 'Verification code is sent to your eamil',
-            data: { code: hashedCode, user_id: findUser.id },
-          };
+      if (findUser) {
+        switch (findUser.is_verified) {
+          case true:
+            throw new HttpException('User alreaday exists', 403);
+          case false:
+            const data = await transporter.sendMail(mailData);
+            return {
+              message: 'Verification code is sent to your eamil',
+              data: { code: hashedCode, user_id: findUser.id },
+            };
+        }
       }
+
+      const hashedPass = await bcrypt.hash(password, 12);
+
+      const newUser = await this.usersRepo.create({
+        username,
+        email,
+        password: hashedPass,
+      });
+
+      await this.usersRepo.save(newUser);
+
+      const data = await transporter.sendMail(mailData);
+
+      return {
+        message: 'Verification code is sent to your eamil',
+        data: { code: hashedCode, user_id: newUser.id },
+      };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
     }
-
-    const hashedPass = await bcrypt.hash(password, 12);
-
-    const newUser = await this.usersRepo.create({
-      username,
-      email,
-      password: hashedPass,
-    });
-
-    await this.usersRepo.save(newUser);
-
-    const data = await transporter.sendMail(mailData);
-
-    return {
-      message: 'Verification code is sent to your eamil',
-      data: { code: hashedCode, user_id: newUser.id },
-    };
   }
 
   async userVerify(id: number, body: VerifyDto) {
-    const { verify_code, code, user_id } = body;
+    try {
+      const { verify_code, code } = body;
 
-    const data = await bcrypt.compare(verify_code.toString(), code);
+      const data = await bcrypt.compare(verify_code.toString(), code);
 
-    if (!data) throw new HttpException('Verfication code does not match', 403);
+      if (!data)
+        throw new HttpException('Verfication code does not match', 403);
 
-    const findUser = await this.usersRepo.findOneBy({ id: user_id });
+      const findUser = await this.usersRepo.findOneBy({ id });
 
-    if (!findUser) throw new HttpException('User not found', 400);
+      if (!findUser) throw new HttpException('User not found', 400);
 
-    await this.usersRepo.update(user_id, { is_verified: true });
+      await this.usersRepo.update(id, { is_verified: true });
 
-    const token = this.jwt.sign({ id: findUser.id });
+      const token = this.jwt.sign({ id: findUser.id });
 
-    return { message: 'success', token };
+      return { message: 'success', token };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async userLogout(id: number) {
-    const findUser = await this.usersRepo.findOneBy({ id });
+    try {
+      const findUser = await this.usersRepo.findOneBy({ id });
 
-    if (!findUser) throw new HttpException('User not found', 400);
+      if (!findUser) throw new HttpException('User not found', 400);
 
-    await this.usersRepo.update(id, { is_verified: false });
+      await this.usersRepo.update(id, { is_verified: false });
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

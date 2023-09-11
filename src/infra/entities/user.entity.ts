@@ -35,6 +35,9 @@ export class UserEntity extends BaseEntity {
   photo: string;
 
   @Column({ nullable: true })
+  birthdate: string;
+
+  @Column({ nullable: true })
   money_amount: number;
 
   @Column({ nullable: true })

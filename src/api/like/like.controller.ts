@@ -3,14 +3,15 @@ import {
   Get,
   Post,
   Body,
-  Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { LikeService } from './like.service';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { myReq } from 'src/infra/interfaces/custom-request';
 
 @UseGuards(AuthGuard)
 @ApiTags('Likes')
@@ -19,8 +20,8 @@ export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
   @Post()
-  create(@Body() createLikeDto: CreateLikeDto) {
-    return this.likeService.create(createLikeDto);
+  create(@Body() createLikeDto: CreateLikeDto, @Req() req: myReq) {
+    return this.likeService.create(createLikeDto, req.userId);
   }
 
   @Get()
@@ -28,18 +29,18 @@ export class LikeController {
     return this.likeService.findAll();
   }
 
-  @Get(':user_id')
-  getUserLikes(@Param('user_id') user_id: string) {
-    return this.likeService.getUserLikes(+user_id);
+  @Get('ofuser')
+  getUserLikes(@Req() req: myReq) {
+    return this.likeService.getUserLikes(+req.userId);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.likeService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.likeService.remove(+id);
+  // }
 
-  @Delete('/all/:user_id')
-  removeAll(@Param('user_id') user_id: string) {
-    return this.likeService.removeAll(+user_id);
+  @Delete('/all')
+  removeAll(@Req() req: myReq) {
+    return this.likeService.removeAll(+req.userId);
   }
 }

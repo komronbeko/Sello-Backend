@@ -26,59 +26,79 @@ export class AdminsService implements OnModuleInit {
   }
 
   async create(body: CreateAdminDto) {
-    const { username, email, password, role } = body;
+    try {
+      const { username, email, password, role } = body;
 
-    const findAdmin = await this.adminsRepo.findOneBy({ username, email });
+      const findAdmin = await this.adminsRepo.findOneBy({ username, email });
 
-    if (findAdmin) throw new HttpException('This Admin already exists', 200);
+      if (findAdmin) throw new HttpException('This Admin already exists', 200);
 
-    const hashedPass = await bcrypt.hash(password, 12);
+      const hashedPass = await bcrypt.hash(password, 12);
 
-    const newAdmin = await this.adminsRepo.create({
-      username,
-      email,
-      password: hashedPass,
-      role,
-    });
+      const newAdmin = await this.adminsRepo.create({
+        username,
+        email,
+        password: hashedPass,
+        role,
+      });
 
-    await this.adminsRepo.save(newAdmin);
+      await this.adminsRepo.save(newAdmin);
 
-    return {
-      message: 'success',
-      data: newAdmin,
-    };
+      return {
+        message: 'success',
+        data: newAdmin,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const admins = await this.adminsRepo.find();
-    return { message: 'success', data: admins };
+    try {
+      const admins = await this.adminsRepo.find();
+      return { message: 'success', data: admins };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findAdmin = await this.adminsRepo.findOneBy({ id });
+    try {
+      const findAdmin = await this.adminsRepo.findOneBy({ id });
 
-    if (!findAdmin) throw new HttpException('Admin nnot found', 400);
+      if (!findAdmin) throw new HttpException('Admin nnot found', 400);
 
-    return { message: 'success', findAdmin };
+      return { message: 'success', findAdmin };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateAdminDto) {
-    const findAdmin = await this.adminsRepo.findOneBy({ id });
+    try {
+      const findAdmin = await this.adminsRepo.findOneBy({ id });
 
-    if (!findAdmin) throw new HttpException('Admin not found', 400);
+      if (!findAdmin) throw new HttpException('Admin not found', 400);
 
-    await this.adminsRepo.update(id, body);
+      await this.adminsRepo.update(id, body);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findAdmin = await this.adminsRepo.findOneBy({ id });
+    try {
+      const findAdmin = await this.adminsRepo.findOneBy({ id });
 
-    if (!findAdmin) throw new HttpException('Admin not found', 400);
+      if (!findAdmin) throw new HttpException('Admin not found', 400);
 
-    await this.adminsRepo.delete(id);
+      await this.adminsRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

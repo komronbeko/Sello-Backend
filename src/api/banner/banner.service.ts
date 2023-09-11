@@ -15,49 +15,69 @@ export class BannerService {
     private readonly catalogRepo: CatalogRepo,
   ) {}
   async create(body: CreateBannerDto) {
-    const findCatalog = await this.catalogRepo.findOneBy({
-      id: body.catalog_id,
-    });
+    try {
+      const findCatalog = await this.catalogRepo.findOneBy({
+        id: body.catalog_id,
+      });
 
-    if (!findCatalog) throw new HttpException('Catalog not found', 400);
-    const newBanner = await this.bannerRepo.create(body);
+      if (!findCatalog) throw new HttpException('Catalog not found', 400);
+      const newBanner = await this.bannerRepo.create(body);
 
-    await this.bannerRepo.save(newBanner);
+      await this.bannerRepo.save(newBanner);
 
-    return { message: 'success', data: newBanner };
+      return { message: 'success', data: newBanner };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const data = await this.bannerRepo.find({ relations: ['catalog'] });
+    try {
+      const data = await this.bannerRepo.find({ relations: ['catalog'] });
 
-    return { message: 'Success', data };
+      return { message: 'Success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findBanner = await this.bannerRepo.findOneBy({ id });
+    try {
+      const findBanner = await this.bannerRepo.findOneBy({ id });
 
-    if (!findBanner) throw new HttpException('Banner not found', 400);
+      if (!findBanner) throw new HttpException('Banner not found', 400);
 
-    return { message: 'Success', data: findBanner };
+      return { message: 'Success', data: findBanner };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateBannerDto) {
-    const findBanner = await this.bannerRepo.findOneBy({ id });
+    try {
+      const findBanner = await this.bannerRepo.findOneBy({ id });
 
-    if (!findBanner) throw new HttpException('Banner not found', 400);
+      if (!findBanner) throw new HttpException('Banner not found', 400);
 
-    await this.bannerRepo.update(id, body);
+      await this.bannerRepo.update(id, body);
 
-    return { message: 'Success' };
+      return { message: 'Success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findBanner = await this.bannerRepo.findOneBy({ id });
+    try {
+      const findBanner = await this.bannerRepo.findOneBy({ id });
 
-    if (!findBanner) throw new HttpException('Banner not found', 400);
+      if (!findBanner) throw new HttpException('Banner not found', 400);
 
-    await this.bannerRepo.delete(id);
+      await this.bannerRepo.delete(id);
 
-    return { message: 'Success' };
+      return { message: 'Success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

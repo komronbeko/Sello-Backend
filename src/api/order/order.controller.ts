@@ -3,16 +3,16 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { myReq } from 'src/infra/interfaces/custom-request';
 
 @UseGuards(AuthGuard)
 @ApiTags('Orders')
@@ -21,8 +21,8 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  create(@Body() createOrderDto: CreateOrderDto, @Req() req: myReq) {
+    return this.orderService.create(createOrderDto, req.userId);
   }
 
   @Get()
@@ -35,14 +35,14 @@ export class OrderController {
     return this.orderService.findOne(+id);
   }
 
-  @Get('/ofusers/:user_id')
-  getUserOrders(@Param('user_id') user_id: string) {
-    return this.orderService.getUserOrders(+user_id);
+  @Get('/ofuser')
+  getUserOrders(@Req() req: myReq) {
+    return this.orderService.getUserOrders(+req.userId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
+  @Delete('cancel/:id')
+  update(@Param('id') id: string) {
+    return this.orderService.cancelOrder(+id);
   }
 
   @Delete(':id')

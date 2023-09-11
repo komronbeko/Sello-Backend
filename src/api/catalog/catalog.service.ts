@@ -11,43 +11,63 @@ export class CatalogService {
     @InjectRepository(CatalogEntity) private readonly catalogRepo: CatalogRepo,
   ) {}
   async create(body: CreateCatalogDto) {
-    const newCatalog = await this.catalogRepo.create(body);
-    await this.catalogRepo.save(newCatalog);
-    return { message: 'success', data: newCatalog };
+    try {
+      const newCatalog = await this.catalogRepo.create(body);
+      await this.catalogRepo.save(newCatalog);
+      return { message: 'success', data: newCatalog };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const data = await this.catalogRepo.find({
-      relations: ['banners', 'categories'],
-    });
+    try {
+      const data = await this.catalogRepo.find({
+        relations: ['banners', 'categories'],
+      });
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findCatalog = await this.catalogRepo.findOneBy({ id });
+    try {
+      const findCatalog = await this.catalogRepo.findOneBy({ id });
 
-    if (!findCatalog) throw new HttpException('Catalog not found', 400);
+      if (!findCatalog) throw new HttpException('Catalog not found', 400);
 
-    return { message: 'success', data: findCatalog };
+      return { message: 'success', data: findCatalog };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateCatalogDto) {
-    const findCatalog = await this.catalogRepo.findOneBy({ id });
+    try {
+      const findCatalog = await this.catalogRepo.findOneBy({ id });
 
-    if (!findCatalog) throw new HttpException('Catalog not found', 400);
+      if (!findCatalog) throw new HttpException('Catalog not found', 400);
 
-    await this.catalogRepo.update(id, body);
-    return { message: 'success' };
+      await this.catalogRepo.update(id, body);
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findCatalog = await this.catalogRepo.findOneBy({ id });
+    try {
+      const findCatalog = await this.catalogRepo.findOneBy({ id });
 
-    if (!findCatalog) throw new HttpException('Catalog not found', 400);
+      if (!findCatalog) throw new HttpException('Catalog not found', 400);
 
-    await this.catalogRepo.delete(id);
+      await this.catalogRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

@@ -18,50 +18,66 @@ export class UsersService {
     @InjectRepository(UserEntity) private readonly userRepo: UserRepo,
   ) {}
   async findAll() {
-    const data = await this.userRepo.find({ relations: ['carts', 'likes'] });
-    return { message: 'success', data };
+    try {
+      const data = await this.userRepo.find({ relations: ['carts', 'likes'] });
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async replenishUserBalance(user_id: number, body: ReplenishBalanceDto) {
-    const { amount, id } = body;
+    try {
+      const { amount, id } = body;
 
-    const findUser = await this.userRepo.findOne({ where: { id: user_id } });
+      const findUser = await this.userRepo.findOne({ where: { id: user_id } });
 
-    if (!findUser) throw new HttpException('User not found', 400);
+      if (!findUser) throw new HttpException('User not found', 400);
 
-    const payment = await stripeService.paymentIntents.create({
-      amount,
-      currency: 'USD',
-      description: 'Payment',
-      payment_method: id,
-      confirm: true,
-      return_url: 'https://example.com/return-url', // Specify your return URL here
-    });
+      const payment = await stripeService.paymentIntents.create({
+        amount,
+        currency: 'USD',
+        description: 'Payment',
+        payment_method: id,
+        confirm: true,
+        return_url: 'https://example.com/return-url', // Specify your return URL here
+      });
 
-    await this.userRepo.update(user_id, {
-      money_amount: findUser.money_amount + amount,
-    });
+      await this.userRepo.update(user_id, {
+        money_amount: findUser.money_amount + amount,
+      });
 
-    return { message: 'success', data: payment };
+      return { message: 'success', data: payment };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findUser = await this.userRepo.findOne({
-      where: { id },
-      relations: ['carts', 'likes'],
-    } as FindOneOptions);
+    try {
+      const findUser = await this.userRepo.findOne({
+        where: { id },
+        relations: ['carts', 'likes'],
+      } as FindOneOptions);
 
-    if (!findUser) throw new HttpException('User not found', 400);
+      if (!findUser) throw new HttpException('User not found', 400);
 
-    return { message: 'success', data: findUser };
+      return { message: 'success', data: findUser };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateUserDto) {
-    const findUser = await this.userRepo.findOneBy({ id });
+    try {
+      const findUser = await this.userRepo.findOneBy({ id });
 
-    if (!findUser) throw new HttpException('User not found', 400);
+      if (!findUser) throw new HttpException('User not found', 400);
 
-    await this.userRepo.update(id, body);
-    return `This action updates a #${id} user`;
+      await this.userRepo.update(id, body);
+      return { message: 'Success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

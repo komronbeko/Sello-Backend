@@ -21,109 +21,142 @@ export class CartService {
     @InjectRepository(UserEntity)
     private readonly userRepo: UserRepo,
   ) {}
-  async create(body: CreateCartDto) {
-    const { product_id, user_id } = body;
 
-    const findUser = await this.userRepo.findOneBy({
-      id: user_id,
-    });
+  async create(body: CreateCartDto, user_id: number) {
+    try {
+      const { product_id } = body;
 
-    const findProduct = await this.productRepo.findOneBy({
-      id: product_id,
-    });
-
-    if (!findUser) throw new HttpException('User not found', 400);
-    if (!findProduct) throw new HttpException('User not found', 400);
-
-    const findCartProduct = await this.cartRepo.findOneBy({
-      user_id,
-      product_id,
-      status: 'unpaid',
-    });
-
-    if (findCartProduct) {
-      await this.cartRepo.update(findCartProduct.id, {
-        count: findCartProduct.count + 1,
+      const findUser = await this.userRepo.findOneBy({
+        id: user_id,
       });
-      return { message: 'Success' };
+
+      const findProduct = await this.productRepo.findOneBy({
+        id: product_id,
+      });
+
+      if (!findUser) throw new HttpException('User not found', 400);
+      if (!findProduct) throw new HttpException('User not found', 400);
+
+      const findCartProduct = await this.cartRepo.findOneBy({
+        user_id,
+        product_id,
+        status: 'unpaid',
+      });
+
+      if (findCartProduct) {
+        await this.cartRepo.update(findCartProduct.id, {
+          count: findCartProduct.count + 1,
+        });
+        return { message: 'Success' };
+      }
+
+      const newCart = await this.cartRepo.create({
+        product_id,
+        user_id,
+        count: 1,
+      });
+
+      await this.cartRepo.save(newCart);
+
+      return { message: 'success', data: newCart };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
     }
-
-    const newCart = await this.cartRepo.create({
-      product_id,
-      user_id,
-      count: 1,
-    });
-
-    await this.cartRepo.save(newCart);
-
-    return { message: 'success', data: newCart };
   }
 
   async findAll() {
-    const data = await this.cartRepo.find({
-      relations: ['user', 'product.discount', 'order'],
-    });
+    try {
+      const data = await this.cartRepo.find({
+        relations: ['user', 'product.discount', 'order'],
+      });
 
-    return { message: 'Success', data };
+      return { message: 'Success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async getUserCarts(user_id: number) {
-    const data = await this.cartRepo.find({
-      where: { user_id },
-      relations: ['user', 'product.discount', 'order'],
-    });
+    try {
+      const data = await this.cartRepo.find({
+        where: { user_id },
+        relations: ['user', 'product.discount', 'order'],
+      });
 
-    return { message: 'Success', data };
+      return { message: 'Success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateCartDto) {
-    const findOrder = await this.orderRepo.findOneBy({ id: body.order_id });
+    try {
+      const findOrder = await this.orderRepo.findOneBy({ id: body.order_id });
 
-    const findCart = await this.cartRepo.findOneBy({ id });
+      const findCart = await this.cartRepo.findOneBy({ id });
 
-    if (!findOrder) throw new HttpException('Order not found', 400);
-    if (!findCart) throw new HttpException('Cart not found', 400);
+      if (!findOrder) throw new HttpException('Order not found', 400);
+      if (!findCart) throw new HttpException('Cart not found', 400);
 
-    await this.cartRepo.update(id, body);
+      await this.cartRepo.update(id, body);
 
-    return { message: 'Success' };
+      return { message: 'Success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async minusCount(id: number) {
-    const findCart = await this.cartRepo.findOneBy({ id });
+    try {
+      const findCart = await this.cartRepo.findOneBy({ id });
 
-    if (!findCart) throw new HttpException('Cart not found', 400);
+      if (!findCart) throw new HttpException('Cart not found', 400);
 
-    if (findCart.count < 1) throw new HttpException('Fatal', 400);
+      if (findCart.count < 1) throw new HttpException('Fatal', 400);
 
-    await this.cartRepo.update(id, { count: findCart.count - 1 });
+      await this.cartRepo.update(id, { count: findCart.count - 1 });
 
-    return { message: 'Decremented to 1' };
+      return { message: 'Decremented to 1' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async plusCount(id: number) {
-    const findCart = await this.cartRepo.findOneBy({ id });
+    try {
+      const findCart = await this.cartRepo.findOneBy({ id });
 
-    if (!findCart) throw new HttpException('Cart not found', 400);
+      if (!findCart) throw new HttpException('Cart not found', 400);
 
-    await this.cartRepo.update(id, { count: findCart.count + 1 });
+      await this.cartRepo.update(id, { count: findCart.count + 1 });
 
-    return { message: 'Decremented to 1' };
+      return { message: 'Decremented to 1' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async removeOne(id: number) {
-    const findCart = await this.cartRepo.findOneBy({ id });
+    try {
+      const findCart = await this.cartRepo.findOneBy({ id });
 
-    if (!findCart) throw new HttpException('Cart not found', 400);
+      if (!findCart) throw new HttpException('Cart not found', 400);
 
-    await this.cartRepo.delete(id);
+      await this.cartRepo.delete(id);
 
-    return { message: 'Deleted Succesfully' };
+      return { message: 'Deleted Succesfully' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async removeAll(user_id: number) {
-    await this.cartRepo.delete({ user_id, status: 'unpaid' });
+    try {      
+      await this.cartRepo.delete({ user_id, status: 'unpaid' });
 
-    return { message: 'Deleted Succesfully' };
+      return { message: 'Deleted Succesfully' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

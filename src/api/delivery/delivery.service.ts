@@ -25,65 +25,85 @@ export class DeliveryService {
   ) {}
 
   async create(body: CreateDeliveryDto) {
-    const { postamat_id, user_address_id, location_id } = body;
-    const findPostamat = await this.postamatRepo.findOneBy({
-      id: postamat_id,
-    });
+    try {
+      const { postamat_id, user_address_id, location_id } = body;
+      const findPostamat = await this.postamatRepo.findOneBy({
+        id: postamat_id,
+      });
 
-    const findUserAddress = await this.userAddressRepo.findOneBy({
-      id: user_address_id,
-    });
+      const findUserAddress = await this.userAddressRepo.findOneBy({
+        id: user_address_id,
+      });
 
-    const findLocation = await this.locationRepo.findOneBy({
-      id: location_id,
-    });
+      const findLocation = await this.locationRepo.findOneBy({
+        id: location_id,
+      });
 
-    if (!findPostamat) {
-      throw new HttpException('Postamat ot found', 400);
-    } else if (!findLocation) {
-      throw new HttpException('Location ot found', 400);
-    } else if (!findUserAddress) {
-      throw new HttpException('User Address ot found', 400);
+      if (!findPostamat) {
+        throw new HttpException('Postamat ot found', 400);
+      } else if (!findLocation) {
+        throw new HttpException('Location ot found', 400);
+      } else if (!findUserAddress) {
+        throw new HttpException('User Address ot found', 400);
+      }
+
+      const newDelivery = await this.deliveryRepo.create(body);
+      await this.deliveryRepo.save(newDelivery);
+
+      return { message: 'success', data: newDelivery };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
     }
-
-    const newDelivery = await this.deliveryRepo.create(body);
-    await this.deliveryRepo.save(newDelivery);
-
-    return { message: 'success', data: newDelivery };
   }
 
   async findAll() {
-    const data = await this.deliveryRepo.find({
-      relations: ['postamat', 'user_address', 'location'],
-    });
+    try {
+      const data = await this.deliveryRepo.find({
+        relations: ['postamat', 'user_address', 'location'],
+      });
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findDelivery = await this.deliveryRepo.findOneBy({ id });
+    try {
+      const findDelivery = await this.deliveryRepo.findOneBy({ id });
 
-    if (!findDelivery) throw new HttpException('Delivery not found', 400);
+      if (!findDelivery) throw new HttpException('Delivery not found', 400);
 
-    return { message: 'success', data: findDelivery };
+      return { message: 'success', data: findDelivery };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateDeliveryDto) {
-    const findDelivery = await this.deliveryRepo.findOneBy({ id });
+    try {
+      const findDelivery = await this.deliveryRepo.findOneBy({ id });
 
-    if (!findDelivery) throw new HttpException('Delivery not found', 400);
+      if (!findDelivery) throw new HttpException('Delivery not found', 400);
 
-    await this.deliveryRepo.update(id, body);
-    return { message: 'success' };
+      await this.deliveryRepo.update(id, body);
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findDelivery = await this.deliveryRepo.findOneBy({ id });
+    try {
+      const findDelivery = await this.deliveryRepo.findOneBy({ id });
 
-    if (!findDelivery) throw new HttpException('Delivery not found', 400);
+      if (!findDelivery) throw new HttpException('Delivery not found', 400);
 
-    await this.deliveryRepo.delete(id);
+      await this.deliveryRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

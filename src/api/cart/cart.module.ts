@@ -6,6 +6,7 @@ import { CartEntity } from 'src/infra/entities/cart.entity';
 import { UserEntity } from 'src/infra/entities/user.entity';
 import { OrderEntity } from 'src/infra/entities/order.entity';
 import { ProductEntity } from 'src/infra/entities/product.entity';
+import { AdminEntity } from 'src/infra/entities/admin.entity';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ProductEntity } from 'src/infra/entities/product.entity';
       UserEntity,
       OrderEntity,
       ProductEntity,
+      AdminEntity,
     ]),
   ],
   controllers: [CartController],

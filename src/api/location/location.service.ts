@@ -12,41 +12,61 @@ export class LocationService {
     private readonly locationRepo: LocationRepo,
   ) {}
   async create(body: CreateLocationDto) {
-    const newLocation = await this.locationRepo.create(body);
-    await this.locationRepo.save(newLocation);
-    return { message: 'success', data: newLocation };
+    try {
+      const newLocation = await this.locationRepo.create(body);
+      await this.locationRepo.save(newLocation);
+      return { message: 'success', data: newLocation };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const data = await this.locationRepo.find();
+    try {
+      const data = await this.locationRepo.find();
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findLocation = await this.locationRepo.findOneBy({ id });
+    try {
+      const findLocation = await this.locationRepo.findOneBy({ id });
 
-    if (!findLocation) throw new HttpException('Location not found', 400);
+      if (!findLocation) throw new HttpException('Location not found', 400);
 
-    return { message: 'success', data: findLocation };
+      return { message: 'success', data: findLocation };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateLocationDto) {
-    const findLocation = await this.locationRepo.findOneBy({ id });
+    try {
+      const findLocation = await this.locationRepo.findOneBy({ id });
 
-    if (!findLocation) throw new HttpException('Location not found', 400);
+      if (!findLocation) throw new HttpException('Location not found', 400);
 
-    await this.locationRepo.update(id, body);
-    return { message: 'success' };
+      await this.locationRepo.update(id, body);
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findLocation = await this.locationRepo.findOneBy({ id });
+    try {
+      const findLocation = await this.locationRepo.findOneBy({ id });
 
-    if (!findLocation) throw new HttpException('Location not found', 400);
+      if (!findLocation) throw new HttpException('Location not found', 400);
 
-    await this.locationRepo.delete(id);
+      await this.locationRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

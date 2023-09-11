@@ -1,9 +1,19 @@
-import { Controller, Get, Body, Patch, Param, UseGuards } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import {
+  Controller,
+  Get,
+  Body,
+  Patch,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ReplenishBalanceDto } from './dto/replenish-balance.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { myReq } from 'src/infra/interfaces/custom-request';
+
 
 @UseGuards(AuthGuard)
 @ApiTags('Users')
@@ -16,23 +26,24 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+
+  @Get('user-one')
+  findOne(@Req() request: myReq) {
+    return this.usersService.findOne(+request.userId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Patch()
+  update(@Req() req: myReq, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(+req.userId, updateUserDto);
   }
 
-  @Patch(':user_id/replenish')
+  @Patch('replenish')
   replenishUserBalance(
-    @Param('user_id') user_id: number,
+    @Req() req: myReq,
     @Body() replenishBalanceDto: ReplenishBalanceDto,
   ) {
     return this.usersService.replenishUserBalance(
-      +user_id,
+      +req.userId,
       replenishBalanceDto,
     );
   }

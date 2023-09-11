@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class VerifyDto {
   @ApiProperty({
@@ -18,12 +18,4 @@ export class VerifyDto {
   @IsString()
   @IsNotEmpty()
   verify_code: string;
-
-  @ApiProperty({
-    description: 'The ID of user',
-    default: 1,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  user_id: number;
 }

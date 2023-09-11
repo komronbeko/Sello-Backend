@@ -12,41 +12,61 @@ export class PartnerService {
     private readonly partnerRepo: PartnerRepo,
   ) {}
   async create(body: CreatePartnerDto) {
-    const newPartner = await this.partnerRepo.create(body);
-    await this.partnerRepo.save(newPartner);
-    return { message: 'success', data: newPartner };
+    try {
+      const newPartner = await this.partnerRepo.create(body);
+      await this.partnerRepo.save(newPartner);
+      return { message: 'success', data: newPartner };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const data = await this.partnerRepo.find();
+    try {
+      const data = await this.partnerRepo.find();
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findPartner = await this.partnerRepo.findOneBy({ id });
+    try {
+      const findPartner = await this.partnerRepo.findOneBy({ id });
 
-    if (!findPartner) throw new HttpException('Partner not found', 400);
+      if (!findPartner) throw new HttpException('Partner not found', 400);
 
-    return { message: 'success', data: findPartner };
+      return { message: 'success', data: findPartner };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdatePartnerDto) {
-    const findPartner = await this.partnerRepo.findOneBy({ id });
+    try {
+      const findPartner = await this.partnerRepo.findOneBy({ id });
 
-    if (!findPartner) throw new HttpException('Partner not found', 400);
+      if (!findPartner) throw new HttpException('Partner not found', 400);
 
-    await this.partnerRepo.update(id, body);
-    return { message: 'success' };
+      await this.partnerRepo.update(id, body);
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findPartner = await this.partnerRepo.findOneBy({ id });
+    try {
+      const findPartner = await this.partnerRepo.findOneBy({ id });
 
-    if (!findPartner) throw new HttpException('Partner not found', 400);
+      if (!findPartner) throw new HttpException('Partner not found', 400);
 
-    await this.partnerRepo.delete(id);
+      await this.partnerRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }

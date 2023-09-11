@@ -18,50 +18,70 @@ export class CategoryService {
   ) {}
 
   async create(body: CreateCategoryDto) {
-    const findCatalog = await this.catalogRepo.findOneBy({
-      id: body.catalog_id,
-    });
+    try {
+      const findCatalog = await this.catalogRepo.findOneBy({
+        id: body.catalog_id,
+      });
 
-    if (!findCatalog) throw new HttpException('Catalog ot found', 400);
+      if (!findCatalog) throw new HttpException('Catalog ot found', 400);
 
-    const newCategory = await this.categoryRepo.create(body);
-    await this.categoryRepo.save(newCategory);
+      const newCategory = await this.categoryRepo.create(body);
+      await this.categoryRepo.save(newCategory);
 
-    return { message: 'success', data: newCategory };
+      return { message: 'success', data: newCategory };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findAll() {
-    const data = await this.categoryRepo.find({
-      relations: ['catalog', 'nestedCategories'],
-    });
+    try {
+      const data = await this.categoryRepo.find({
+        relations: ['catalog', 'nestedCategories'],
+      });
 
-    return { message: 'success', data };
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async findOne(id: number) {
-    const findCategory = await this.categoryRepo.findOneBy({ id });
+    try {
+      const findCategory = await this.categoryRepo.findOneBy({ id });
 
-    if (!findCategory) throw new HttpException('Category not found', 400);
+      if (!findCategory) throw new HttpException('Category not found', 400);
 
-    return { message: 'success', data: findCategory };
+      return { message: 'success', data: findCategory };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async update(id: number, body: UpdateCategoryDto) {
-    const findCategory = await this.categoryRepo.findOneBy({ id });
+    try {
+      const findCategory = await this.categoryRepo.findOneBy({ id });
 
-    if (!findCategory) throw new HttpException('Category not found', 400);
+      if (!findCategory) throw new HttpException('Category not found', 400);
 
-    await this.categoryRepo.update(id, body);
-    return { message: 'success' };
+      await this.categoryRepo.update(id, body);
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 
   async remove(id: number) {
-    const findCategory = await this.categoryRepo.findOneBy({ id });
+    try {
+      const findCategory = await this.categoryRepo.findOneBy({ id });
 
-    if (!findCategory) throw new HttpException('Category not found', 400);
+      if (!findCategory) throw new HttpException('Category not found', 400);
 
-    await this.categoryRepo.delete(id);
+      await this.categoryRepo.delete(id);
 
-    return { message: 'success' };
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
   }
 }
