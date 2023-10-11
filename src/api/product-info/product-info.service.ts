@@ -12,7 +12,7 @@ import { ProductEntity } from 'src/infra/entities/product.entity';
 export class ProductInfoService {
   constructor(
     @InjectRepository(ProductInfoEntity)
-    private readonly categoryRepo: ProductInfoRepo,
+    private readonly productInfoRepo: ProductInfoRepo,
     @InjectRepository(ProductEntity)
     private readonly productRepo: ProductRepo,
   ) {}
@@ -25,8 +25,8 @@ export class ProductInfoService {
 
       if (!findProduct) throw new HttpException('Product ot found', 400);
 
-      const newProductInfo = await this.categoryRepo.create(body);
-      await this.categoryRepo.save(newProductInfo);
+      const newProductInfo = await this.productInfoRepo.create(body);
+      await this.productInfoRepo.save(newProductInfo);
 
       return { message: 'success', data: newProductInfo };
     } catch (error) {
@@ -36,7 +36,7 @@ export class ProductInfoService {
 
   async findAll() {
     try {
-      const data = await this.categoryRepo.find({
+      const data = await this.productInfoRepo.find({
         relations: ['product.discount'],
       });
 
@@ -48,7 +48,7 @@ export class ProductInfoService {
 
   async infosForProduct(product_id: number) {
     try {
-      const findProductInfos = await this.categoryRepo.findBy({ product_id });
+      const findProductInfos = await this.productInfoRepo.findBy({ product_id });
 
       return { message: 'success', data: findProductInfos };
     } catch (error) {
@@ -58,12 +58,12 @@ export class ProductInfoService {
 
   async update(id: number, body: UpdateProductInfoDto) {
     try {
-      const findProductInfo = await this.categoryRepo.findOneBy({ id });
+      const findProductInfo = await this.productInfoRepo.findOneBy({ id });
 
       if (!findProductInfo)
         throw new HttpException('ProductInfo not found', 400);
 
-      await this.categoryRepo.update(id, body);
+      await this.productInfoRepo.update(id, body);
       return { message: 'success' };
     } catch (error) {
       throw new HttpException(error.message, 400);
@@ -72,12 +72,12 @@ export class ProductInfoService {
 
   async remove(id: number) {
     try {
-      const findProductInfo = await this.categoryRepo.findOneBy({ id });
+      const findProductInfo = await this.productInfoRepo.findOneBy({ id });
 
       if (!findProductInfo)
         throw new HttpException('ProductInfo not found', 400);
 
-      await this.categoryRepo.delete(id);
+      await this.productInfoRepo.delete(id);
 
       return { message: 'success' };
     } catch (error) {

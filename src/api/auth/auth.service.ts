@@ -1,9 +1,10 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { LoginDto } from './dto/login.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AdminRepo } from 'src/infra/repos/admin.repo';
 import { AdminEntity } from 'src/infra/entities/admin.entity';
@@ -45,7 +46,11 @@ export class AuthService {
 
       if (!comparePass) throw new ForbiddenException();
 
-      const token = this.jwt.sign({ id: findAdmin.id });
+      const expiresInOneYear = 365 * 24 * 60 * 60;
+
+      const token = this.jwt.sign({ id: findAdmin.id },  {
+        expiresIn: expiresInOneYear
+      } as JwtSignOptions);
 
       return { message: 'success', data: token };
     } catch (error) {
@@ -156,7 +161,11 @@ export class AuthService {
 
       await this.usersRepo.update(id, { is_verified: true });
 
-      const token = this.jwt.sign({ id: findUser.id });
+      const expiresInOneYear = 365 * 24 * 60 * 60;
+
+      const token = this.jwt.sign({ id: findUser.id },  {
+        expiresIn: expiresInOneYear
+      } as JwtSignOptions);
 
       return { message: 'success', token };
     } catch (error) {

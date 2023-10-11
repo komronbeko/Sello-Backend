@@ -68,7 +68,7 @@ export class ProductService {
           'likes',
           'carts',
         ],
-      });
+      });      
 
       return { message: 'success', data };
     } catch (error) {
@@ -95,6 +95,413 @@ export class ProductService {
       return { message: 'success', data: findProduct };
     } catch (error) {
       throw new HttpException(error.message, 400);
+    }
+  }
+
+  async sort(value: string, catalog_id: number, category_id: number) {
+    try {
+      if (!catalog_id) {
+        if (value === 'default') {
+          
+          const data = await this.productRepo.find({
+            relations: [
+              'discount',
+              'catalog',
+              'category',
+              'product_infos',
+              'brand',
+              'nested_category'
+            ],
+          });
+
+
+          return { message: 'success', data, value };
+        } else if (value === 'a-z') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+            .addOrderBy('product.name', 'ASC')
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'z-a') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+            .addOrderBy('product.name', 'DESC')
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'discount-top') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+            .addOrderBy('discount.rate', 'DESC')
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'discount-bottom') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('discount.rate', 'ASC')
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'price-top') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('price', 'DESC')
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'price-bottom') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('price', 'ASC')
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'update-top') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('product.updated_at', 'DESC')
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'update-bottom') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('product.updated_at', 'ASC')
+            .getMany();
+          return { message: 'success', data };
+        }
+      } 
+      else if (!category_id) {
+        if (value === 'default') {
+
+          const data = await this.productRepo.find({
+            relations: [
+              'discount',
+              'catalog',
+              'category',
+              'product_infos',
+              'brand',
+              'nested_category'
+            ],
+            where: { catalog_id },
+          });
+
+          return { message: 'success', data, catalog_id };
+        } else if (value === 'a-z') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+            .addOrderBy('product.name', 'ASC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .getMany();
+
+          return { message: 'success', data };
+        } else if (value === 'z-a') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+            .addOrderBy('product.name', 'DESC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'discount-top') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+            .addOrderBy('discount.rate', 'DESC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'discount-bottom') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('discount.rate', 'ASC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'price-top') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('price', 'DESC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'price-bottom') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('price', 'ASC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'update-top') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('product.updated_at', 'DESC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'update-bottom') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('product.updated_at', 'ASC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        }
+      }  
+      else {
+        if (value === 'default') {
+          const data = await this.productRepo.find({
+            relations: [
+              'discount',
+              'catalog',
+              'category',
+              'product_infos',
+              'brand',
+              'nested_category'
+            ],
+            where: { catalog_id, category_id },
+          });
+
+          return { message: 'success', data };
+        } else if (value === 'a-z') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+            .addOrderBy('product.name', 'ASC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .andWhere('product.category_id = :category_id', {
+              category_id: category_id,
+            })
+            .getMany();
+
+          return { message: 'success', data };
+        } else if (value === 'z-a') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+            .addOrderBy('product.name', 'DESC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .andWhere('product.category_id = :category_id', {
+              category_id: category_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'discount-top') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+            .addOrderBy('discount.rate', 'DESC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .andWhere('product.category_id = :category_id', {
+              category_id: category_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'discount-bottom') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('discount.rate', 'ASC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .andWhere('product.category_id = :category_id', {
+              category_id: category_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'price-top') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('price', 'DESC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .andWhere('product.category_id = :category_id', {
+              category_id: category_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'price-bottom') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('price', 'ASC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .andWhere('product.category_id = :category_id', {
+              category_id: category_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'update-top') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('product.updated_at', 'DESC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .andWhere('product.category_id = :category_id', {
+              category_id: category_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        } else if (value === 'update-bottom') {
+          const data = await this.productRepo
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.discount', 'discount')
+            .leftJoinAndSelect('product.catalog', 'catalog')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.product_infos', 'product_infos')
+            .leftJoinAndSelect('product.brand', 'brand')
+            .addOrderBy('product.updated_at', 'ASC')
+            .where('product.catalog_id = :id', {
+              id: catalog_id,
+            })
+            .andWhere('product.category_id = :category_id', {
+              category_id: category_id,
+            })
+            .getMany();
+          return { message: 'success', data };
+        }
+      }
+    } catch (error) {
+      return { message: error.message };
     }
   }
 

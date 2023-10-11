@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -6,6 +7,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -30,6 +32,16 @@ export class ProductController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productService.findOne(+id);
+  }
+
+  // @Get('/filter/by-catalog')
+  // findByCatalog(@Query('catalog') catalog: string) {
+  //   return this.productService.findByCatalog(catalog);
+  // }
+
+  @Get('/sort/by-value')
+  sort(@Query('value') value: string, @Query('catalog_id') catalog_id: string, @Query('category_id') category_id: string) {
+    return this.productService.sort(value, +catalog_id, +category_id);
   }
 
   @Patch(':id')

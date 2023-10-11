@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -23,6 +24,7 @@ import { ProductModule } from './api/product/product.module';
 import { UserAddressModule } from './api/user-address/user-address.module';
 import { PostamatModule } from './api/postamat/postamat.module';
 import { DeliveryModule } from './api/delivery/delivery.module';
+import { FilterProductsModule } from './api/filter-products/filter-products.module';
 
 @Module({
   imports: [
@@ -54,6 +56,7 @@ import { DeliveryModule } from './api/delivery/delivery.module';
     UserAddressModule,
     PostamatModule,
     DeliveryModule,
+    FilterProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
