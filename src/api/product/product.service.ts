@@ -124,6 +124,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
             .addOrderBy('product.name', 'ASC')
             .getMany();
@@ -136,6 +137,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
             .addOrderBy('product.name', 'DESC')
             .getMany();
@@ -148,6 +150,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
             .addOrderBy('discount.rate', 'DESC')
             .getMany();
@@ -160,6 +163,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('discount.rate', 'ASC')
             .getMany();
           return { message: 'success', data };
@@ -171,6 +175,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('price', 'DESC')
             .getMany();
           return { message: 'success', data };
@@ -182,6 +187,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('price', 'ASC')
             .getMany();
           return { message: 'success', data };
@@ -193,6 +199,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('product.updated_at', 'DESC')
             .getMany();
           return { message: 'success', data };
@@ -204,6 +211,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('product.updated_at', 'ASC')
             .getMany();
           return { message: 'success', data };
@@ -233,6 +241,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
             .addOrderBy('product.name', 'ASC')
             .where('product.catalog_id = :id', {
@@ -249,6 +258,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
             .addOrderBy('product.name', 'DESC')
             .where('product.catalog_id = :id', {
@@ -264,6 +274,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
             .addOrderBy('discount.rate', 'DESC')
             .where('product.catalog_id = :id', {
@@ -279,6 +290,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('discount.rate', 'ASC')
             .where('product.catalog_id = :id', {
               id: catalog_id,
@@ -293,6 +305,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('price', 'DESC')
             .where('product.catalog_id = :id', {
               id: catalog_id,
@@ -307,6 +320,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('price', 'ASC')
             .where('product.catalog_id = :id', {
               id: catalog_id,
@@ -321,6 +335,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('product.updated_at', 'DESC')
             .where('product.catalog_id = :id', {
               id: catalog_id,
@@ -335,6 +350,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('product.updated_at', 'ASC')
             .where('product.catalog_id = :id', {
               id: catalog_id,
@@ -366,6 +382,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
             .addOrderBy('product.name', 'ASC')
             .where('product.catalog_id = :id', {
@@ -385,6 +402,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
             .addOrderBy('product.name', 'DESC')
             .where('product.catalog_id = :id', {
@@ -403,6 +421,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
             .addOrderBy('discount.rate', 'DESC')
             .where('product.catalog_id = :id', {
@@ -421,6 +440,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('discount.rate', 'ASC')
             .where('product.catalog_id = :id', {
               id: catalog_id,
@@ -438,6 +458,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('price', 'DESC')
             .where('product.catalog_id = :id', {
               id: catalog_id,
@@ -455,6 +476,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('price', 'ASC')
             .where('product.catalog_id = :id', {
               id: catalog_id,
@@ -472,6 +494,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('product.updated_at', 'DESC')
             .where('product.catalog_id = :id', {
               id: catalog_id,
@@ -489,6 +512,7 @@ export class ProductService {
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.product_infos', 'product_infos')
             .leftJoinAndSelect('product.brand', 'brand')
+            .leftJoinAndSelect('product.nested_category', 'nested_category')
             .addOrderBy('product.updated_at', 'ASC')
             .where('product.catalog_id = :id', {
               id: catalog_id,
