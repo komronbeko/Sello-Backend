@@ -68,7 +68,7 @@ export class ProductService {
           'likes',
           'carts',
         ],
-      });      
+      });
 
       return { message: 'success', data };
     } catch (error) {
@@ -98,430 +98,1546 @@ export class ProductService {
     }
   }
 
-  async sort(value: string, catalog_id: number, category_id: number) {
+  async sort(
+    value: string,
+    catalog_id: number,
+    category_id: number,
+    from: number,
+    to: number,
+    discounts_arr: number[],
+    brands_arr: string[],
+    sub_categories_arr: string[],
+    product_infos_arr: string[],
+  ) {
     try {
-      if (!catalog_id) {
-        if (value === 'default') {
-          
-          const data = await this.productRepo.find({
-            relations: [
-              'discount',
-              'catalog',
-              'category',
-              'product_infos',
-              'brand',
-              'nested_category'
-            ],
-          });
+      //---------------ALL-FILTERS--------------//
+      //----------------------------------------//
+      if (
+        product_infos_arr.length &&
+        sub_categories_arr.length &&
+        brands_arr.length &&
+        discounts_arr.length &&
+        to &&
+        from &&
+        category_id &&
+        catalog_id &&
+        value
+      ) {
+        switch (value) {
+          case 'default':
+            const data1 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .andWhere(
+                'EXISTS ' +
+                  '(SELECT 1 FROM product_infos AS info ' +
+                  'WHERE info.product_id = product.id ' +
+                  'AND info.value IN (:...productInfoValues))',
+                { productInfoValues: product_infos_arr },
+              )
+              .getMany();
 
+            return { message: 'success', data1 };
+          case 'a-z':
+            const data2 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .andWhere(
+                'EXISTS ' +
+                  '(SELECT 1 FROM product_infos AS info ' +
+                  'WHERE info.product_id = product.id ' +
+                  'AND info.value IN (:...productInfoValues))',
+                { productInfoValues: product_infos_arr },
+              )
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+              .addOrderBy('product.name', 'ASC')
+              .getMany();
 
-          return { message: 'success', data, value };
-        } else if (value === 'a-z') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
-            .addOrderBy('product.name', 'ASC')
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'z-a') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
-            .addOrderBy('product.name', 'DESC')
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'discount-top') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
-            .addOrderBy('discount.rate', 'DESC')
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'discount-bottom') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('discount.rate', 'ASC')
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'price-top') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('price', 'DESC')
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'price-bottom') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('price', 'ASC')
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'update-top') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('product.updated_at', 'DESC')
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'update-bottom') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('product.updated_at', 'ASC')
-            .getMany();
-          return { message: 'success', data };
+            return { message: 'success', data2 };
+          case 'z-a':
+            const data3 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .andWhere(
+                'EXISTS ' +
+                  '(SELECT 1 FROM product_infos AS info ' +
+                  'WHERE info.product_id = product.id ' +
+                  'AND info.value IN (:...productInfoValues))',
+                { productInfoValues: product_infos_arr },
+              )
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+              .addOrderBy('product.name', 'DESC')
+              .getMany();
+
+            return { message: 'success', data3 };
+          case 'discount-top':
+            const data4 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .andWhere(
+                'EXISTS ' +
+                  '(SELECT 1 FROM product_infos AS info ' +
+                  'WHERE info.product_id = product.id ' +
+                  'AND info.value IN (:...productInfoValues))',
+                { productInfoValues: product_infos_arr },
+              )
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+              .addOrderBy('discount.rate', 'DESC')
+              .getMany();
+
+            return { message: 'success', data4 };
+          case 'discount-bottom':
+            const data5 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .andWhere(
+                'EXISTS ' +
+                  '(SELECT 1 FROM product_infos AS info ' +
+                  'WHERE info.product_id = product.id ' +
+                  'AND info.value IN (:...productInfoValues))',
+                { productInfoValues: product_infos_arr },
+              )
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'ASC')
+              .addOrderBy('discount.rate', 'ASC')
+              .getMany();
+
+            return { message: 'success', data5 };
+          case 'price-top':
+            const data6 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .andWhere(
+                'EXISTS ' +
+                  '(SELECT 1 FROM product_infos AS info ' +
+                  'WHERE info.product_id = product.id ' +
+                  'AND info.value IN (:...productInfoValues))',
+                { productInfoValues: product_infos_arr },
+              )
+              .orderBy('price', 'DESC')
+              .getMany();
+
+            return { message: 'success', data6 };
+          case 'price-bottom':
+            const data7 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .andWhere(
+                'EXISTS ' +
+                  '(SELECT 1 FROM product_infos AS info ' +
+                  'WHERE info.product_id = product.id ' +
+                  'AND info.value IN (:...productInfoValues))',
+                { productInfoValues: product_infos_arr },
+              )
+              .orderBy('price', 'ASC')
+              .getMany();
+
+            return { message: 'success', data7 };
+          case 'update-top':
+            const data8 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .andWhere(
+                'EXISTS ' +
+                  '(SELECT 1 FROM product_infos AS info ' +
+                  'WHERE info.product_id = product.id ' +
+                  'AND info.value IN (:...productInfoValues))',
+                { productInfoValues: product_infos_arr },
+              )
+              .orderBy('product.updated_at', 'DESC')
+              .getMany();
+
+            return { message: 'success', data8 };
+          case 'update-bottom':
+            const data9 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .andWhere(
+                'EXISTS ' +
+                  '(SELECT 1 FROM product_infos AS info ' +
+                  'WHERE info.product_id = product.id ' +
+                  'AND info.value IN (:...productInfoValues))',
+                { productInfoValues: product_infos_arr },
+              )
+              .orderBy('product.updated_at', 'ASC')
+              .getMany();
+
+            return { message: 'success', data9 };
         }
-      } 
-      else if (!category_id) {
-        if (value === 'default') {
+      }
 
-          const data = await this.productRepo.find({
-            relations: [
-              'discount',
-              'catalog',
-              'category',
-              'product_infos',
-              'brand',
-              'nested_category'
-            ],
-            where: { catalog_id },
-          });
+      //---------------ALL-FILTERS EXCEPT PRODUCT_INFOS--------------//
+      //------------------------------------------------------------//
+      if (
+        sub_categories_arr.length &&
+        brands_arr.length &&
+        discounts_arr.length &&
+        to &&
+        from &&
+        category_id &&
+        catalog_id &&
+        value
+      ) {
+        switch (value) {
+          case 'default':
+            const data1 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .getMany();
 
-          return { message: 'success', data, catalog_id };
-        } else if (value === 'a-z') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
-            .addOrderBy('product.name', 'ASC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .getMany();
+            return { message: 'success', data1 };
+          case 'a-z':
+            const data2 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+              .addOrderBy('product.name', 'ASC')
+              .getMany();
 
-          return { message: 'success', data };
-        } else if (value === 'z-a') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
-            .addOrderBy('product.name', 'DESC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'discount-top') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
-            .addOrderBy('discount.rate', 'DESC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'discount-bottom') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('discount.rate', 'ASC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'price-top') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('price', 'DESC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'price-bottom') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('price', 'ASC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'update-top') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('product.updated_at', 'DESC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'update-bottom') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('product.updated_at', 'ASC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .getMany();
-          return { message: 'success', data };
+            return { message: 'success', data2 };
+          case 'z-a':
+            const data3 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+              .addOrderBy('product.name', 'DESC')
+              .getMany();
+
+            return { message: 'success', data3 };
+          case 'discount-top':
+            const data4 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+              .addOrderBy('discount.rate', 'DESC')
+              .getMany();
+
+            return { message: 'success', data4 };
+          case 'discount-bottom':
+            const data5 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'ASC')
+              .addOrderBy('discount.rate', 'ASC')
+              .getMany();
+
+            return { message: 'success', data5 };
+          case 'price-top':
+            const data6 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('price', 'DESC')
+              .getMany();
+
+            return { message: 'success', data6 };
+          case 'price-bottom':
+            const data7 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('price', 'ASC')
+              .getMany();
+
+            return { message: 'success', data7 };
+          case 'update-top':
+            const data8 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('product.updated_at', 'DESC')
+              .getMany();
+
+            return { message: 'success', data8 };
+          case 'update-bottom':
+            const data9 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('nested_category.name IN (:...subCategoriesArr)', {
+                subCategoriesArr: sub_categories_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('product.updated_at', 'ASC')
+              .getMany();
+
+            return { message: 'success', data9 };
         }
-      }  
-      else {
-        if (value === 'default') {
-          const data = await this.productRepo.find({
-            relations: [
-              'discount',
-              'catalog',
-              'category',
-              'product_infos',
-              'brand',
-              'nested_category'
-            ],
-            where: { catalog_id, category_id },
-          });
+      }
 
-          return { message: 'success', data };
-        } else if (value === 'a-z') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
-            .addOrderBy('product.name', 'ASC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .andWhere('product.category_id = :category_id', {
-              category_id: category_id,
-            })
-            .getMany();
+      //---------------ALL-FILTERS EXCEPT PRODUCT_INFOS and SUB_CATEGORIES--------------//
+      //------------------------------------------------------------//
+      if (
+        brands_arr.length &&
+        discounts_arr.length &&
+        to &&
+        from &&
+        category_id &&
+        catalog_id &&
+        value
+      ) {
+        switch (value) {
+          case 'default':
+            const data1 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .getMany();
 
-          return { message: 'success', data };
-        } else if (value === 'z-a') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
-            .addOrderBy('product.name', 'DESC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .andWhere('product.category_id = :category_id', {
-              category_id: category_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'discount-top') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
-            .addOrderBy('discount.rate', 'DESC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .andWhere('product.category_id = :category_id', {
-              category_id: category_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'discount-bottom') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('discount.rate', 'ASC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .andWhere('product.category_id = :category_id', {
-              category_id: category_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'price-top') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('price', 'DESC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .andWhere('product.category_id = :category_id', {
-              category_id: category_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'price-bottom') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('price', 'ASC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .andWhere('product.category_id = :category_id', {
-              category_id: category_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'update-top') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('product.updated_at', 'DESC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .andWhere('product.category_id = :category_id', {
-              category_id: category_id,
-            })
-            .getMany();
-          return { message: 'success', data };
-        } else if (value === 'update-bottom') {
-          const data = await this.productRepo
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.discount', 'discount')
-            .leftJoinAndSelect('product.catalog', 'catalog')
-            .leftJoinAndSelect('product.category', 'category')
-            .leftJoinAndSelect('product.product_infos', 'product_infos')
-            .leftJoinAndSelect('product.brand', 'brand')
-            .leftJoinAndSelect('product.nested_category', 'nested_category')
-            .addOrderBy('product.updated_at', 'ASC')
-            .where('product.catalog_id = :id', {
-              id: catalog_id,
-            })
-            .andWhere('product.category_id = :category_id', {
-              category_id: category_id,
-            })
-            .getMany();
-          return { message: 'success', data };
+            return { message: 'success', data1 };
+          case 'a-z':
+            const data2 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+              .addOrderBy('product.name', 'ASC')
+              .getMany();
+
+            return { message: 'success', data2 };
+          case 'z-a':
+            const data3 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+              .addOrderBy('product.name', 'DESC')
+              .getMany();
+
+            return { message: 'success', data3 };
+          case 'discount-top':
+            const data4 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+              .addOrderBy('discount.rate', 'DESC')
+              .getMany();
+
+            return { message: 'success', data4 };
+          case 'discount-bottom':
+            const data5 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'ASC')
+              .addOrderBy('discount.rate', 'ASC')
+              .getMany();
+
+            return { message: 'success', data5 };
+          case 'price-top':
+            const data6 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('price', 'DESC')
+              .getMany();
+
+            return { message: 'success', data6 };
+          case 'price-bottom':
+            const data7 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('price', 'ASC')
+              .getMany();
+
+            return { message: 'success', data7 };
+          case 'update-top':
+            const data8 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('product.updated_at', 'DESC')
+              .getMany();
+
+            return { message: 'success', data8 };
+          case 'update-bottom':
+            const data9 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .andWhere('brand.name IN (:...brandsArr)', {
+                brandsArr: brands_arr,
+              })
+              .orderBy('product.updated_at', 'ASC')
+              .getMany();
+
+            return { message: 'success', data9 };
+        }
+      }
+
+      //---------------ALL-FILTERS EXCEPT PRODUCT_INFOS, SUB_CATEGORIES and BRANDS--------------//
+      //------------------------------------------------------------//
+      if (
+        discounts_arr.length &&
+        to &&
+        from &&
+        category_id &&
+        catalog_id &&
+        value
+      ) {
+        switch (value) {
+          case 'default':
+            const data1 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .getMany();
+
+            return { message: 'success', data1 };
+          case 'a-z':
+            const data2 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+              .addOrderBy('product.name', 'ASC')
+              .getMany();
+
+            return { message: 'success', data2 };
+          case 'z-a':
+            const data3 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+              .addOrderBy('product.name', 'DESC')
+              .getMany();
+
+            return { message: 'success', data3 };
+          case 'discount-top':
+            const data4 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+              .addOrderBy('discount.rate', 'DESC')
+              .getMany();
+
+            return { message: 'success', data4 };
+          case 'discount-bottom':
+            const data5 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'ASC')
+              .addOrderBy('discount.rate', 'ASC')
+              .getMany();
+
+            return { message: 'success', data5 };
+          case 'price-top':
+            const data6 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .orderBy('price', 'DESC')
+              .getMany();
+
+            return { message: 'success', data6 };
+          case 'price-bottom':
+            const data7 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .orderBy('price', 'ASC')
+              .getMany();
+
+            return { message: 'success', data7 };
+          case 'update-top':
+            const data8 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .orderBy('product.updated_at', 'DESC')
+              .getMany();
+
+            return { message: 'success', data8 };
+          case 'update-bottom':
+            const data9 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .andWhere('discount.rate IN (:...discountArr)', {
+                discountArr: discounts_arr,
+              })
+              .orderBy('product.updated_at', 'ASC')
+              .getMany();
+
+            return { message: 'success', data9 };
+        }
+      }
+
+      //---------------PRICE, CATEGORY, CATALOG, SORTING_VALUE FILTERS--------------//
+      //---------------------------------------------------------------------------//
+      if (to && from && category_id && catalog_id && value) {
+        switch (value) {
+          case 'default':
+            const data1 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .getMany();
+
+            return { message: 'success', data1 };
+          case 'a-z':
+            const data2 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+              .addOrderBy('product.name', 'ASC')
+              .getMany();
+
+            return { message: 'success', data2 };
+          case 'z-a':
+            const data3 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+              .addOrderBy('product.name', 'DESC')
+              .getMany();
+
+            return { message: 'success', data3 };
+          case 'discount-top':
+            const data4 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+              .addOrderBy('discount.rate', 'DESC')
+              .getMany();
+
+            return { message: 'success', data4 };
+          case 'discount-bottom':
+            const data5 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'ASC')
+              .addOrderBy('discount.rate', 'ASC')
+              .getMany();
+
+            return { message: 'success', data5 };
+          case 'price-top':
+            const data6 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .orderBy('price', 'DESC')
+              .getMany();
+
+            return { message: 'success', data6 };
+          case 'price-bottom':
+            const data7 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .orderBy('price', 'ASC')
+              .getMany();
+
+            return { message: 'success', data7 };
+          case 'update-top':
+            const data8 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .orderBy('product.updated_at', 'DESC')
+              .getMany();
+
+            return { message: 'success', data8 };
+          case 'update-bottom':
+            const data9 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .andWhere('product.price BETWEEN :from AND :to', { from, to })
+              .orderBy('product.updated_at', 'ASC')
+              .getMany();
+
+            return { message: 'success', data9 };
+        }
+      }
+
+      //---------------CATEGORY, CATALOG, SORTING_VALUE FILTERS--------------//
+      //----------------------------------------------------------------------------//
+      if (category_id && catalog_id && value) {
+        switch (value) {
+          case 'default':
+            const data1 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .getMany();
+
+            return { message: 'success', data1 };
+          case 'a-z':
+            const data2 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+              .addOrderBy('product.name', 'ASC')
+              .getMany();
+
+            return { message: 'success', data2 };
+          case 'z-a':
+            const data3 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+              .addOrderBy('product.name', 'DESC')
+              .getMany();
+
+            return { message: 'success', data3 };
+          case 'discount-top':
+            const data4 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+              .addOrderBy('discount.rate', 'DESC')
+              .getMany();
+
+            return { message: 'success', data4 };
+          case 'discount-bottom':
+            const data5 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'ASC')
+              .addOrderBy('discount.rate', 'ASC')
+              .getMany();
+
+            return { message: 'success', data5 };
+          case 'price-top':
+            const data6 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .orderBy('price', 'DESC')
+              .getMany();
+
+            return { message: 'success', data6 };
+          case 'price-bottom':
+            const data7 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .orderBy('price', 'ASC')
+              .getMany();
+
+            return { message: 'success', data7 };
+          case 'update-top':
+            const data8 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .orderBy('product.updated_at', 'DESC')
+              .getMany();
+
+            return { message: 'success', data8 };
+          case 'update-bottom':
+            const data9 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .andWhere('product.category_id = :category_id', { category_id })
+              .orderBy('product.updated_at', 'ASC')
+              .getMany();
+
+            return { message: 'success', data9 };
+        }
+      }
+
+      //---------------CATALOG and SORTING_VALUE FILTERS--------------//
+      //----------------------------------------------------------------------------//
+      if (catalog_id && value) {
+        switch (value) {
+          case 'default':
+            const data1 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .getMany();
+
+            return { message: 'success', data1 };
+          case 'a-z':
+            const data2 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+              .addOrderBy('product.name', 'ASC')
+              .getMany();
+
+            return { message: 'success', data2 };
+          case 'z-a':
+            const data3 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+              .addOrderBy('product.name', 'DESC')
+              .getMany();
+
+            return { message: 'success', data3 };
+          case 'discount-top':
+            const data4 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+              .addOrderBy('discount.rate', 'DESC')
+              .getMany();
+
+            return { message: 'success', data4 };
+          case 'discount-bottom':
+            const data5 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'ASC')
+              .addOrderBy('discount.rate', 'ASC')
+              .getMany();
+
+            return { message: 'success', data5 };
+          case 'price-top':
+            const data6 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .orderBy('price', 'DESC')
+              .getMany();
+
+            return { message: 'success', data6 };
+          case 'price-bottom':
+            const data7 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .orderBy('price', 'ASC')
+              .getMany();
+
+            return { message: 'success', data7 };
+          case 'update-top':
+            const data8 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .orderBy('product.updated_at', 'DESC')
+              .getMany();
+
+            return { message: 'success', data8 };
+          case 'update-bottom':
+            const data9 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .where('product.catalog_id = :catalog_id', { catalog_id })
+              .orderBy('product.updated_at', 'ASC')
+              .getMany();
+
+            return { message: 'success', data9 };
+        }
+      }
+
+      //---------------FILTER BY SORTING_VALUE--------------//
+      //----------------------------------------------------------------------------//
+      if (value) {
+        switch (value) {
+          case 'default':
+            const data = await this.productRepo.find({
+              relations: [
+                'discount',
+                'catalog',
+                'category',
+                'product_infos',
+                'brand',
+                'nested_category',
+              ],
+            });
+
+            return { message: 'success', data };
+          case 'a-z':
+            const data2 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+              .addOrderBy('product.name', 'ASC')
+              .getMany();
+
+            // const data = await this.productRepo
+            // .createQueryBuilder('product')
+            // .leftJoinAndSelect('product.discount', 'discount')
+            // .leftJoinAndSelect('product.catalog', 'catalog')
+            // .leftJoinAndSelect('product.category', 'category')
+            // .leftJoinAndSelect('product.product_infos', 'product_infos')
+            // .leftJoinAndSelect('product.brand', 'brand')
+            // .leftJoinAndSelect('product.nested_category', 'nested_category')
+            // .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'ASC')
+            // .addOrderBy('product.name', 'ASC')
+            // .getMany();
+
+            return { message: 'success', data2 };
+          case 'z-a':
+            const data3 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .orderBy('SUBSTRING(product.name FROM 1 FOR 1)', 'DESC')
+              .addOrderBy('product.name', 'DESC')
+              .getMany();
+
+            return { message: 'success', data3 };
+          case 'discount-top':
+            const data4 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+              .addOrderBy('discount.rate', 'DESC')
+              .getMany();
+
+            return { message: 'success', data4 };
+          case 'discount-bottom':
+            const data5 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'ASC')
+              .addOrderBy('discount.rate', 'ASC')
+              .getMany();
+
+            return { message: 'success', data5 };
+          case 'price-top':
+            const data6 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .orderBy('price', 'DESC')
+              .getMany();
+
+            return { message: 'success', data6 };
+          case 'price-bottom':
+            const data7 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .orderBy('price', 'ASC')
+              .getMany();
+
+            return { message: 'success', data7 };
+          case 'update-top':
+            const data8 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .orderBy('product.updated_at', 'DESC')
+              .getMany();
+
+            return { message: 'success', data8 };
+          case 'update-bottom':
+            const data9 = await this.productRepo
+              .createQueryBuilder('product')
+              .leftJoinAndSelect('product.catalog', 'catalog')
+              .leftJoinAndSelect('product.category', 'category')
+              .leftJoinAndSelect('product.product_infos', 'product_info')
+              .leftJoinAndSelect('product.brand', 'brand')
+              .leftJoinAndSelect('product.nested_category', 'nested_category')
+              .leftJoinAndSelect('product.discount', 'discount')
+              .orderBy('product.updated_at', 'ASC')
+              .getMany();
+
+            return { message: 'success', data9 };
         }
       }
     } catch (error) {
