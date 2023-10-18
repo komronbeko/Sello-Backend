@@ -34,33 +34,28 @@ export class ProductController {
     return this.productService.findOne(+id);
   }
 
-  @Get('/sort/by-value')
+  @Get('/filters/all-in-one')
   sort(
     @Query('value') value: string,
     @Query('catalog_id') catalog_id: string,
     @Query('category_id') category_id: string,
     @Query('from') from: string,
     @Query('to') to: string,
-    @Query('discounts') discounts: string,
-    @Query('brands') brands: string,
-    @Query('sub_categories') sub_categories: string,
-    @Query('product_infos') product_infos: string,
+    @Query('discounts') discounts_arr: string,
+    @Query('brands') brands_arr: string,
+    @Query('sub_categories') sub_categories_arr: string,
+    @Query('product_infos') product_infos_arr: string,
   ) {
-    const discounts_arr: number[] = JSON.parse(discounts);
-    const brands_arr: string[] = JSON.parse(brands);
-    const sub_categories_arr: string[] = JSON.parse(sub_categories);
-    const product_infos_arr: string[] = JSON.parse(product_infos);
-
     return this.productService.sort(
       value,
-      +catalog_id, 
+      +catalog_id,
       +category_id,
       +from,
       +to,
-      discounts_arr, 
+      discounts_arr,
       brands_arr,
       sub_categories_arr,
-      product_infos_arr
+      product_infos_arr,
     );
   }
 

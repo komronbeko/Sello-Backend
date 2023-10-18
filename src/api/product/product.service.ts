@@ -104,10 +104,10 @@ export class ProductService {
     category_id: number,
     from: number,
     to: number,
-    discounts_arr: number[],
-    brands_arr: string[],
-    sub_categories_arr: string[],
-    product_infos_arr: string[],
+    discounts_arr: string,
+    brands_arr: string,
+    sub_categories_arr: string,
+    product_infos_arr: string,
   ) {
     try {
       let query = this.productRepo
@@ -122,7 +122,6 @@ export class ProductService {
       if (catalog_id) {
         query = query.where('product.catalog_id = :catalog_id', { catalog_id });
       }
-      
 
       if (category_id) {
         query = query.andWhere('product.category_id = :category_id', {
@@ -137,55 +136,64 @@ export class ProductService {
         });
       }
 
-      if (discounts_arr && discounts_arr.length > 0) {
+      if (discounts_arr) {
         query = query.andWhere('discount.rate IN (:...discountArr)', {
-          discountArr: discounts_arr,
+          discountArr: JSON.parse(discounts_arr),
         });
       }
 
-      if (sub_categories_arr && sub_categories_arr.length > 0) {
+      if (sub_categories_arr) {
         query = query.andWhere(
           'nested_category.name IN (:...subCategoriesArr)',
-          { subCategoriesArr: sub_categories_arr },
+          { subCategoriesArr: JSON.parse(sub_categories_arr) },
         );
       }
 
-      if (brands_arr && brands_arr.length > 0) {
+      if (brands_arr) {
         query = query.andWhere('brand.name IN (:...brandsArr)', {
-          brandsArr: brands_arr,
+          brandsArr: JSON.parse(brands_arr),
         });
       }
 
-      if (product_infos_arr && product_infos_arr.length > 0) {
+      if (product_infos_arr) {
         query = query.andWhere(
           'EXISTS ' +
             '(SELECT 1 FROM product_infos AS info ' +
             'WHERE info.product_id = product.id ' +
             'AND info.value IN (:...productInfoValues))',
-          { productInfoValues: product_infos_arr },
+          { productInfoValues: JSON.parse(product_infos_arr) },
         );
       }
 
-      if (value === 'a-z') {
-        query = query.orderBy('product.name', 'ASC');
-      } else if (value === 'z-a') {
-        query = query.orderBy('product.name', 'DESC');
-      } else if (value === 'discount-top') {
-        query = query
-          .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
-          .addOrderBy('discount.rate', 'DESC');
-      } else if (value === 'discount-bottom') {
-        query = query
-          .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'ASC')
-          .addOrderBy('discount.rate', 'ASC');
-      } else if (value === 'price-top') {
-        query = query.orderBy('price', 'DESC')
-      } else if (value === 'price-bottom') {
-        query = query.orderBy('price', 'ASC')
-      } else if (value === 'update-top') {
-        query = query.orderBy('product.updated_at', 'DESC')
-      } else if (value === 'update-bottom') {
-        query = query.orderBy('product.updated_at', 'ASC')
+      switch (value) {
+        case 'a-z':
+          query = query.orderBy('product.name', 'ASC');
+          break;
+        case 'z-a':
+          query = query.orderBy('product.name', 'DESC');
+          break;
+        case 'discount-top':
+          query = query
+            .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'DESC')
+            .addOrderBy('discount.rate', 'DESC');
+          break;
+        case 'discount-bottom':
+          query = query
+            .orderBy('CASE WHEN discount IS NULL THEN 0 ELSE 1 END', 'ASC')
+            .addOrderBy('discount.rate', 'ASC');
+          break;
+        case 'price-top':
+          query = query.orderBy('price', 'DESC');
+          break;
+        case 'price-bottom':
+          query = query.orderBy('price', 'ASC');
+          break;
+        case 'update-top':
+          query = query.orderBy('product.updated_at', 'DESC');
+          break;
+        case 'update-bottom':
+          query = query.orderBy('product.updated_at', 'ASC');
+          break;
       }
 
       return { message: 'success', data: await query.getMany() };
