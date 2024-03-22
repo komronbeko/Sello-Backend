@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 

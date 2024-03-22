@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateProductInfoDto } from './dto/create-product-info.dto';
 import { UpdateProductInfoDto } from './dto/update-product-info.dto';
@@ -48,7 +47,9 @@ export class ProductInfoService {
 
   async infosForProduct(product_id: number) {
     try {
-      const findProductInfos = await this.productInfoRepo.findBy({ product_id });
+      const findProductInfos = await this.productInfoRepo.findBy({
+        product_id,
+      });
 
       return { message: 'success', data: findProductInfos };
     } catch (error) {

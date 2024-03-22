@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { DeliveryEntity } from './delivery.entity';
@@ -17,7 +16,8 @@ export class LocationEntity extends BaseEntity {
   @Column()
   working_hours: string;
 
-  
-  @OneToMany(() => DeliveryEntity, delivery => delivery.location, {cascade: true})
-  deliveries: DeliveryEntity[]
+  @OneToMany(() => DeliveryEntity, (delivery) => delivery.location, {
+    cascade: true,
+  })
+  deliveries: DeliveryEntity[];
 }

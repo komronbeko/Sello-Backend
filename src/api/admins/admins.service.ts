@@ -66,7 +66,7 @@ export class AdminsService implements OnModuleInit {
     try {
       const findAdmin = await this.adminsRepo.findOneBy({ id });
 
-      if (!findAdmin) throw new HttpException('Admin nnot found', 400);
+      if (!findAdmin) throw new HttpException('Admin not found', 400);
 
       return { message: 'success', findAdmin };
     } catch (error) {

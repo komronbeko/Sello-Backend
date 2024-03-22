@@ -1,11 +1,4 @@
-/* eslint-disable prettier/prettier */
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { DiscountEntity } from './discount.entity';
 import { CategoryEntity } from './category.entity';
 import { NestedCategoryEntity } from './nested-category.entity';
@@ -15,7 +8,6 @@ import { LikeEntity } from './like.entity';
 import { CartEntity } from './cart.entity';
 import { ProductInfoEntity } from './product-info.entity';
 import { CatalogEntity } from './catalog.entity';
-
 
 @Entity({ name: 'products' })
 export class ProductEntity extends BaseEntity {
@@ -49,19 +41,19 @@ export class ProductEntity extends BaseEntity {
   @Column({ nullable: false, default: false })
   unpacked: boolean;
 
-  @Column({ nullable: true,})
+  @Column({ nullable: true })
   discount_id: number;
 
-  @Column({ nullable: false,})
+  @Column({ nullable: false })
   category_id: number;
-  
-  @Column({ nullable: false,})
+
+  @Column({ nullable: false })
   nested_category_id: number;
 
-  @Column({ nullable: true,})
+  @Column({ nullable: true })
   brand_id: number;
 
-  @Column({ nullable: false,})
+  @Column({ nullable: false })
   catalog_id: number;
 
   @ManyToOne(() => DiscountEntity, (discount) => discount.products)
@@ -87,12 +79,14 @@ export class ProductEntity extends BaseEntity {
   @JoinColumn({ name: 'catalog_id' })
   catalog: CatalogEntity;
 
-  @OneToMany(() => ProductInfoEntity, (productInfo) => productInfo.product, {cascade: true})
+  @OneToMany(() => ProductInfoEntity, (productInfo) => productInfo.product, {
+    cascade: true,
+  })
   product_infos: ProductInfoEntity[];
- 
-  @OneToMany(() => LikeEntity, (like) => like.product, {cascade: true})
+
+  @OneToMany(() => LikeEntity, (like) => like.product, { cascade: true })
   likes: LikeEntity[];
 
-  @OneToMany(() => CartEntity, (cart) => cart.product, {cascade: true})
+  @OneToMany(() => CartEntity, (cart) => cart.product, { cascade: true })
   carts: CartEntity[];
 }

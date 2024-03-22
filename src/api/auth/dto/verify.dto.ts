@@ -1,11 +1,10 @@
-/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class VerifyDto {
   @ApiProperty({
     description: 'Send back the hashed code sent from the backend',
-    default: "hiduqwgbjacs,huewyehrskafajwcSQWIYEU",
+    default: 'hiduqwgbjacs,huewyehrskafajwcSQWIYEU',
   })
   @IsString()
   @IsNotEmpty()

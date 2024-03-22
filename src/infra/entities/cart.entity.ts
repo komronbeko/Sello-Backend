@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { UserEntity } from './user.entity';
@@ -21,10 +20,9 @@ export class CartEntity extends BaseEntity {
 
   @Column({ nullable: false, default: 0 })
   count: number;
-  
+
   @Column({ nullable: true })
   order_id: number;
-
 
   @ManyToOne(() => UserEntity, (user) => user.carts)
   @JoinColumn({ name: 'user_id' })

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -136,26 +135,26 @@ export class ProductService {
         });
       }
 
-      if (discounts_arr) {
+      if (discounts_arr && JSON.parse(discounts_arr).length) {
         query = query.andWhere('discount.rate IN (:...discountArr)', {
           discountArr: JSON.parse(discounts_arr),
         });
       }
 
-      if (sub_categories_arr) {
+      if (sub_categories_arr && JSON.parse(sub_categories_arr).length) {
         query = query.andWhere(
           'nested_category.name IN (:...subCategoriesArr)',
           { subCategoriesArr: JSON.parse(sub_categories_arr) },
         );
       }
 
-      if (brands_arr) {
+      if (brands_arr && JSON.parse(brands_arr).length) {
         query = query.andWhere('brand.name IN (:...brandsArr)', {
           brandsArr: JSON.parse(brands_arr),
         });
       }
 
-      if (product_infos_arr) {
+      if (product_infos_arr && JSON.parse(product_infos_arr).length) {
         query = query.andWhere(
           'EXISTS ' +
             '(SELECT 1 FROM product_infos AS info ' +

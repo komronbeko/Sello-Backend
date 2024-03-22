@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
@@ -81,6 +80,7 @@ export class CartService {
       const data = await this.cartRepo.find({
         where: { user_id },
         relations: ['user', 'product.discount', 'order'],
+        order: { updated_at: 'ASC' },
       });
 
       return { message: 'Success', data };
@@ -151,7 +151,7 @@ export class CartService {
   }
 
   async removeAll(user_id: number) {
-    try {      
+    try {
       await this.cartRepo.delete({ user_id, status: 'unpaid' });
 
       return { message: 'Deleted Succesfully' };

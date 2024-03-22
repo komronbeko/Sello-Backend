@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { ProductEntity } from './product.entity';
@@ -11,6 +10,8 @@ export class DiscountEntity extends BaseEntity {
   @Column({ nullable: false, default: true })
   is_active: boolean;
 
-  @OneToMany(() => ProductEntity, (product) => product.discount, {cascade: true})
+  @OneToMany(() => ProductEntity, (product) => product.discount, {
+    cascade: true,
+  })
   products: ProductEntity[];
 }

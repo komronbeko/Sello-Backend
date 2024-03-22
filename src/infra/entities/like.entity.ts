@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { UserEntity } from './user.entity';
@@ -12,12 +11,11 @@ export class LikeEntity extends BaseEntity {
   @Column({ nullable: false })
   product_id: number;
 
+  @ManyToOne(() => UserEntity, (user) => user.likes)
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
 
-    @ManyToOne(() => UserEntity, (user) => user.likes)
-    @JoinColumn({ name: 'user_id' })
-    user: UserEntity;
-
-    @ManyToOne(() => ProductEntity, (product) => product.likes)
-    @JoinColumn({ name: 'product_id' })
-    product: ProductEntity;
+  @ManyToOne(() => ProductEntity, (product) => product.likes)
+  @JoinColumn({ name: 'product_id' })
+  product: ProductEntity;
 }

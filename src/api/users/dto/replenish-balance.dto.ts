@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { RegisterDto } from 'src/api/auth/dto/register.dto';

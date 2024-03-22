@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { BaseEntity } from './base.entity';
@@ -28,7 +27,8 @@ export class UserAddressEntity extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
-  
-  @OneToMany(() => DeliveryEntity, delivery => delivery.user_address, {cascade: true})
-  deliveries: DeliveryEntity[]
+  @OneToMany(() => DeliveryEntity, (delivery) => delivery.user_address, {
+    cascade: true,
+  })
+  deliveries: DeliveryEntity[];
 }

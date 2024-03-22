@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from './base.entity';
 
@@ -21,4 +20,4 @@ export class AdminEntity extends BaseEntity {
 
   @Column({ default: 'admin', nullable: true })
   role: string;
-} 
+}

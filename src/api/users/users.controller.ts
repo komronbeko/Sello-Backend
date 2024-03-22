@@ -1,19 +1,10 @@
-/* eslint-disable prettier/prettier */
-import {
-  Controller,
-  Get,
-  Body,
-  Patch,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Body, Patch, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ReplenishBalanceDto } from './dto/replenish-balance.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { myReq } from 'src/infra/interfaces/custom-request';
-
 
 @UseGuards(AuthGuard)
 @ApiTags('Users')
@@ -25,7 +16,6 @@ export class UsersController {
   findAll() {
     return this.usersService.findAll();
   }
-
 
   @Get('user-one')
   findOne(@Req() request: myReq) {

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Repository } from 'typeorm';
 import { NestedCategoryEntity } from '../entities/nested-category.entity';
 

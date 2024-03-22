@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateCatalogDto } from './dto/create-catalog.dto';
 import { UpdateCatalogDto } from './dto/update-catalog.dto';
@@ -26,7 +25,6 @@ export class CatalogService {
       const data = await this.catalogRepo.find({
         relations: ['banners', 'categories.nestedCategories', 'products'],
       });
-      
 
       return { message: 'success', data };
     } catch (error) {

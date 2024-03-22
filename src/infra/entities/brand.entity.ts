@@ -1,8 +1,6 @@
-/* eslint-disable prettier/prettier */
-import {Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { ProductEntity } from './product.entity';
-
 
 @Entity({ name: 'brands' })
 export class BrandEntity extends BaseEntity {
@@ -12,6 +10,6 @@ export class BrandEntity extends BaseEntity {
   @Column({ nullable: false })
   photo: string;
 
-  @OneToMany(() => ProductEntity, (product) => product.brand, {cascade: true})
+  @OneToMany(() => ProductEntity, (product) => product.brand, { cascade: true })
   products: ProductEntity[];
 }

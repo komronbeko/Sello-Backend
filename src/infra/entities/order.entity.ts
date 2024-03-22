@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { CartEntity } from './cart.entity';
@@ -6,10 +5,10 @@ import { BaseEntity } from './base.entity';
 
 @Entity({ name: 'orders' })
 export class OrderEntity extends BaseEntity {
-  @Column({ nullable: false})
+  @Column({ nullable: false })
   cost: number;
 
-  @Column({ nullable: false }) 
+  @Column({ nullable: false })
   secret_code: string;
 
   @Column({ nullable: false, default: 'new' })

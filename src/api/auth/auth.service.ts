@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
@@ -48,8 +47,8 @@ export class AuthService {
 
       const expiresInOneYear = 365 * 24 * 60 * 60;
 
-      const token = this.jwt.sign({ id: findAdmin.id },  {
-        expiresIn: expiresInOneYear
+      const token = this.jwt.sign({ id: findAdmin.id }, {
+        expiresIn: expiresInOneYear,
       } as JwtSignOptions);
 
       return { message: 'success', data: token };
@@ -163,8 +162,8 @@ export class AuthService {
 
       const expiresInOneYear = 365 * 24 * 60 * 60;
 
-      const token = this.jwt.sign({ id: findUser.id },  {
-        expiresIn: expiresInOneYear
+      const token = this.jwt.sign({ id: findUser.id }, {
+        expiresIn: expiresInOneYear,
       } as JwtSignOptions);
 
       return { message: 'success', token };

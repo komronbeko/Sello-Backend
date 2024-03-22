@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { CartEntity } from './cart.entity';
@@ -7,8 +6,7 @@ import { NotificationEntity } from './notification.entity';
 import { OrderEntity } from './order.entity';
 import { UserAddressEntity } from './user-adress.entity';
 
-
-@Entity({ name: 'users' }) 
+@Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
   @Column({ nullable: false })
   username: string;
@@ -46,18 +44,22 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   gender: string;
 
-  @OneToMany(() => CartEntity, (cart) => cart.user, {cascade: true})
+  @OneToMany(() => CartEntity, (cart) => cart.user, { cascade: true })
   carts: CartEntity[];
 
-  @OneToMany(() => LikeEntity, (like) => like.user, {cascade: true})
+  @OneToMany(() => LikeEntity, (like) => like.user, { cascade: true })
   likes: LikeEntity[];
 
-  @OneToMany(() => OrderEntity, (order) => order.user, {cascade: true})
+  @OneToMany(() => OrderEntity, (order) => order.user, { cascade: true })
   orders: OrderEntity[];
 
-  @OneToMany(() => NotificationEntity, (notification) => notification.user, {cascade: true})
+  @OneToMany(() => NotificationEntity, (notification) => notification.user, {
+    cascade: true,
+  })
   notifications: NotificationEntity[];
 
-  @OneToMany(() => UserAddressEntity, (userAddress) => userAddress.user, {cascade: true})
+  @OneToMany(() => UserAddressEntity, (userAddress) => userAddress.user, {
+    cascade: true,
+  })
   userAddresses: UserAddressEntity[];
 }

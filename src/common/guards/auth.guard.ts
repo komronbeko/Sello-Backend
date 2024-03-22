@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {
   CanActivate,
   ExecutionContext,
@@ -20,20 +19,17 @@ export class AuthGuard implements CanActivate {
       const token =
         request.headers.authorization?.split(' ')[1] ??
         request.headers.authorization;
-        
 
       if (!token) return false;
-
 
       const verified = this.jwt.verify(token, {
         secret: process.env.JWT_SEC_KEY,
       });
-      
-      
-      request.userId = verified.id;      
- 
+
+      request.userId = verified.id;
+
       return true;
-    } catch (error) {      
+    } catch (error) {
       throw new HttpException('Invlaid token', 403);
     }
   }

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { v4 as uuid } from 'uuid';
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';

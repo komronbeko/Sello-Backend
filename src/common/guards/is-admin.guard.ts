@@ -1,5 +1,9 @@
-/* eslint-disable prettier/prettier */
-import { CanActivate, ExecutionContext, HttpException, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AdminEntity } from 'src/infra/entities/admin.entity';

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { CatalogEntity } from './catalog.entity';
@@ -12,7 +11,7 @@ export class BannerEntity extends BaseEntity {
   catalog_id: number;
 
   @ManyToOne(() => CatalogEntity, (catalog) => catalog.banners)
-  @JoinColumn({name: 'catalog_id'})
+  @JoinColumn({ name: 'catalog_id' })
   catalog: CatalogEntity;
 
   @Column({ nullable: false })
