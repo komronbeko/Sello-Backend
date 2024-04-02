@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+import 'dotenv/config';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -24,6 +26,10 @@ import { UserAddressModule } from './api/user-address/user-address.module';
 import { PostamatModule } from './api/postamat/postamat.module';
 import { DeliveryModule } from './api/delivery/delivery.module';
 import { FilterProductsModule } from './api/filter-products/filter-products.module';
+import { SearchModule } from './api/search/search.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-redis-store';
+
 
 @Module({
   imports: [
@@ -33,6 +39,12 @@ import { FilterProductsModule } from './api/filter-products/filter-products.modu
       logging: false,
       synchronize: true,
       autoLoadEntities: true,
+    }),
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
     }),
     AdminsModule,
     UsersModule,
@@ -56,6 +68,7 @@ import { FilterProductsModule } from './api/filter-products/filter-products.modu
     PostamatModule,
     DeliveryModule,
     FilterProductsModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

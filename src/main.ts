@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
+import * as compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -11,6 +12,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.use('/uploads', express.static(process.cwd() + '/uploads'));
+
+  app.use(compression());
 
   app.useGlobalPipes(
     new ValidationPipe({
