@@ -30,7 +30,10 @@ export class isAdminGuard implements CanActivate {
         secret: process.env.JWT_SEC_KEY,
       });
 
-      const findAdmin = await this.adminRepo.findOneBy({ id: verified.id });
+      const findAdmin = await this.adminRepo.findOneBy({
+        id: verified.id,
+        role: 'super' || 'admin',
+      });
 
       if (!findAdmin) return false;
 

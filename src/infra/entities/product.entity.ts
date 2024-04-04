@@ -8,6 +8,7 @@ import { LikeEntity } from './like.entity';
 import { CartEntity } from './cart.entity';
 import { ProductInfoEntity } from './product-info.entity';
 import { CatalogEntity } from './catalog.entity';
+import { ReviewEntity } from './review.entity';
 
 @Entity({ name: 'products' })
 export class ProductEntity extends BaseEntity {
@@ -86,6 +87,9 @@ export class ProductEntity extends BaseEntity {
 
   @OneToMany(() => LikeEntity, (like) => like.product, { cascade: true })
   likes: LikeEntity[];
+
+  @OneToMany(() => ReviewEntity, (review) => review.product, { cascade: true })
+  reviews: ReviewEntity[];
 
   @OneToMany(() => CartEntity, (cart) => cart.product, { cascade: true })
   carts: CartEntity[];

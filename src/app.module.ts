@@ -28,6 +28,7 @@ import { DeliveryModule } from './api/delivery/delivery.module';
 import { FilterProductsModule } from './api/filter-products/filter-products.module';
 import { SearchModule } from './api/search/search.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ReviewsModule } from './api/reviews/reviews.module';
 import * as redisStore from 'cache-manager-redis-store';
 
 
@@ -69,6 +70,7 @@ import * as redisStore from 'cache-manager-redis-store';
     DeliveryModule,
     FilterProductsModule,
     SearchModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -5,6 +5,7 @@ import { LikeEntity } from './like.entity';
 import { NotificationEntity } from './notification.entity';
 import { OrderEntity } from './order.entity';
 import { UserAddressEntity } from './user-adress.entity';
+import { ReviewEntity } from './review.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
@@ -49,6 +50,9 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany(() => LikeEntity, (like) => like.user, { cascade: true })
   likes: LikeEntity[];
+
+  @OneToMany(() => ReviewEntity, (review) => review.user, { cascade: true })
+  reviews: LikeEntity[];
 
   @OneToMany(() => OrderEntity, (order) => order.user, { cascade: true })
   orders: OrderEntity[];
