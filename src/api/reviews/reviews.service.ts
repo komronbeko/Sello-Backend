@@ -81,7 +81,18 @@ export class ReviewsService {
         where: { product_id, user_id: Not(user_id) },
         relations: ['user', 'product'],
       });
-      return { message: 'success', data: productReviews };
+
+      const avg = await this.reviewRepo
+        .createQueryBuilder('review')
+        .select('AVG(review.stars)', 'rate')
+        .where('review.product_id = :product_id', { product_id })
+        .getRawOne();
+
+      return {
+        message: 'success',
+        data: productReviews,
+        review_rate: avg.rate,
+      };
     } catch (error) {
       throw new HttpException(error.message, 400);
     }
