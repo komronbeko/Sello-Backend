@@ -1,24 +1,25 @@
-import { Inject, Injectable } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+// import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from 'src/infra/entities/product.entity';
 import { ProductRepo } from 'src/infra/repos/product.repo';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+// import { CACHE_MANAGER } from '@nestjs/cache-manager';
+// import { Cache } from 'cache-manager';
 
-@Injectable()
+// @Injectable()
 export class SearchService {
   constructor(
     @InjectRepository(ProductEntity) private readonly productRepo: ProductRepo,
-    @Inject(CACHE_MANAGER) private cacheService: Cache,
-  ) {}
+  ) // @Inject(CACHE_MANAGER) private cacheService: Cache,
+  {}
 
   async search(searchValue: string): Promise<ProductEntity[] | string> {
-    const cachedData =
-      await this.cacheService.get<ProductEntity[]>(searchValue);
+    // const cachedData =
+    //   await this.cacheService.get<ProductEntity[]>(searchValue);
 
-    if (cachedData) {
-      return cachedData;
-    }
+    // if (cachedData) {
+    //   return cachedData;
+    // }
 
     const searchedProducts = await this.productRepo
       .createQueryBuilder('product')
@@ -48,9 +49,9 @@ export class SearchService {
       })
       .getMany();
 
-    if (searchedProducts.length) {
-      await this.cacheService.set(searchValue, searchedProducts);
-    }
+    // if (searchedProducts.length) {
+    //   await this.cacheService.set(searchValue, searchedProducts);
+    // }
     return searchedProducts;
   }
 }

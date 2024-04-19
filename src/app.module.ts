@@ -27,9 +27,9 @@ import { PostamatModule } from './api/postamat/postamat.module';
 import { DeliveryModule } from './api/delivery/delivery.module';
 import { FilterProductsModule } from './api/filter-products/filter-products.module';
 import { SearchModule } from './api/search/search.module';
-import { CacheModule } from '@nestjs/cache-manager';
+// import { CacheModule } from '@nestjs/cache-manager';
 import { ReviewsModule } from './api/reviews/reviews.module';
-import * as redisStore from 'cache-manager-redis-store';
+// import * as redisStore from 'cache-manager-redis-store';
 
 
 @Module({
@@ -41,12 +41,12 @@ import * as redisStore from 'cache-manager-redis-store';
       synchronize: true,
       autoLoadEntities: true,
     }),
-    CacheModule.register({
-      isGlobal: true,
-      store: redisStore,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-    }),
+    // CacheModule.register({
+    //   isGlobal: true,
+    //   store: redisStore,
+    //   host: process.env.REDIS_HOST,
+    //   port: process.env.REDIS_PORT,
+    // }),
     AdminsModule,
     UsersModule,
     FileModule,
