@@ -30,6 +30,7 @@ export class FileController {
     }),
   )
   uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
     return { name: file.filename, message: 'Success' };
   }
 }

@@ -29,6 +29,7 @@ import { FilterProductsModule } from './api/filter-products/filter-products.modu
 import { SearchModule } from './api/search/search.module';
 // import { CacheModule } from '@nestjs/cache-manager';
 import { ReviewsModule } from './api/reviews/reviews.module';
+import { FeedbackModule } from './api/feedback/feedback.module';
 // import * as redisStore from 'cache-manager-redis-store';
 
 
@@ -71,6 +72,7 @@ import { ReviewsModule } from './api/reviews/reviews.module';
     FilterProductsModule,
     SearchModule,
     ReviewsModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],

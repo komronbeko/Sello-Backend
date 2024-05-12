@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { CartEntity } from './cart.entity';
@@ -6,6 +7,7 @@ import { NotificationEntity } from './notification.entity';
 import { OrderEntity } from './order.entity';
 import { UserAddressEntity } from './user-adress.entity';
 import { ReviewEntity } from './review.entity';
+import { FeedbackEntity } from './feedback.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
@@ -66,4 +68,9 @@ export class UserEntity extends BaseEntity {
     cascade: true,
   })
   userAddresses: UserAddressEntity[];
+
+  @OneToMany(()=> FeedbackEntity, (feedback) => feedback.user, {
+    cascade: true
+  })
+  feedbacks: FeedbackEntity[]
 }
