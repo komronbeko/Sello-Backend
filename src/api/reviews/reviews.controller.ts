@@ -28,7 +28,7 @@ export class ReviewsController {
     return this.reviewsService.create(createReviewDto, req.userId);
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.reviewsService.findAll();
@@ -54,8 +54,8 @@ export class ReviewsController {
 
   @UseGuards(AuthGuard)
   @Patch()
-  update(@Body() updateReviewDto: UpdateReviewDto, @Req() req: myReq) {
-    return this.reviewsService.update(updateReviewDto, req.userId);
+  update(@Body() updateReviewDto: UpdateReviewDto) {
+    return this.reviewsService.update(updateReviewDto);
   }
 
   @UseGuards(isAdminGuard)

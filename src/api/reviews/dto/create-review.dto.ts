@@ -4,7 +4,7 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 export class CreateReviewDto {
   @ApiProperty({
     description: 'The ID of the product',
-    default: 0,
+    default: 1,
   })
   @IsNumber()
   @IsNotEmpty()

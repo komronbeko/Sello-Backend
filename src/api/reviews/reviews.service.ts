@@ -34,14 +34,14 @@ export class ReviewsService {
       if (!findUser) throw new HttpException('User not found', 400);
       if (!findProduct) throw new HttpException('Product not found', 400);
 
-      const findReview = await this.reviewRepo.findOneBy({
-        product_id,
-        user_id,
-      });
+      // const findReview = await this.reviewRepo.findOneBy({
+      //   product_id,
+      //   user_id,
+      // });
 
-      if (findReview) {
-        throw new HttpException('Already reviewed! Try to edit it', 400);
-      }
+      // if (findReview) {
+      //   throw new HttpException('Already reviewed! Try to edit it', 400);
+      // }
 
       const newReview = this.reviewRepo.create({
         product_id,
@@ -128,7 +128,7 @@ export class ReviewsService {
     }
   }
 
-  async update(body: UpdateReviewDto, user_id: number) {
+  async update(body: UpdateReviewDto) {
     const { id, commentary, stars } = body;
 
     const findReview = await this.reviewRepo.findOneBy({ id });
