@@ -12,6 +12,8 @@ import { UserRepo } from 'src/infra/repos/user.repo';
 import { RegisterDto } from './dto/register.dto';
 import { VerifyDto } from './dto/verify.dto';
 import { FindOneOptions } from 'typeorm';
+import { OtpDto } from './dto/otp.dto';
+import { PassResetDto } from './dto/pass-reset.dto';
 
 const transporter = nodemailer.createTransport({
   port: 465,
@@ -107,6 +109,7 @@ export class AuthService {
         text: 'Verification',
         html: `<b>Your verification code is: ${code}</b>`,
       };
+
       const findUser = await this.usersRepo.findOne({
         where: [{ username }, { email }],
       } as FindOneOptions);
@@ -145,6 +148,56 @@ export class AuthService {
     }
   }
 
+  async otpForEmailReset(otpDto: OtpDto) {
+    try {
+      const { email } = otpDto;
+
+      const findUser = await this.usersRepo.findOneBy({ email });
+
+      if (!findUser) throw new ForbiddenException();
+
+      const code: number = Math.floor(100000 + Math.random() * 900000);
+
+      const hashedCode = await bcrypt.hash(code.toString(), 12);
+
+      const mailData = {
+        from: 'uzakovumar338@gmail.com',
+        to: email,
+        subject: 'Sello Online Magazine',
+        text: 'Email Verification',
+        html: `<b>Your verification code is: ${code}</b>`,
+      };
+
+      const data = await transporter.sendMail(mailData);
+
+      return {
+        message: 'Verification code is sent to your eamil',
+        data: { code: hashedCode, user_id: findUser.id },
+      };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
+  }
+
+  async otpVerify(id: number, body: VerifyDto) {
+    try {
+      const { verify_code, code } = body;
+
+      const data = await bcrypt.compare(verify_code.toString(), code);
+
+      if (!data)
+        throw new HttpException('Verfication code does not match', 403);
+
+      const findUser = await this.usersRepo.findOneBy({ id });
+
+      if (!findUser) throw new HttpException('User not found', 400);
+
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
+  }
+
   async userVerify(id: number, body: VerifyDto) {
     try {
       const { verify_code, code } = body;
@@ -170,6 +223,23 @@ export class AuthService {
     } catch (error) {
       throw new HttpException(error.message, 400);
     }
+  }
+
+  async passReset(user_id: number, body: PassResetDto) {
+    const { new_pass } = body;
+    const findUser = await this.usersRepo.findOneBy({ id: user_id });
+
+    if (!findUser) return new HttpException('User not found', 403);
+
+    await this.usersRepo.update(user_id, { password: new_pass });
+
+    const expiresInOneYear = 365 * 24 * 60 * 60;
+
+    const token = this.jwt.sign({ id: findUser.id }, {
+      expiresIn: expiresInOneYear,
+    } as JwtSignOptions);
+
+    return { message: 'success', token };
   }
 
   async userLogout(id: number) {
