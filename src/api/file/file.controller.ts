@@ -12,8 +12,8 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { v4 } from 'uuid';
-const FileUploadDto = require('./dto/create-file.dto');
-const { validate } = require('class-validator');
+import { FileUploadDto } from './dto/create-file.dto';
+import { validate } from 'class-validator';
 
 @ApiTags('File')
 @UseGuards(AuthGuard)
