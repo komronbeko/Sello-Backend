@@ -32,7 +32,7 @@ export class isAdminGuard implements CanActivate {
 
       const findAdmin = await this.adminRepo.findOneBy({
         id: verified.id,
-        role: 'super' || 'admin',
+        role: 'super',
       });
 
       if (!findAdmin) return false;
