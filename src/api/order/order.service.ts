@@ -20,7 +20,7 @@ export class OrderService {
     private readonly userRepo: UserRepo,
   ) {}
 
-  async create(body: CreateOrderDto, user_id: number) {
+  async create(body: CreateOrderDto, user_id: string) {
     try {
       const { cost, location } = body;
 
@@ -78,7 +78,7 @@ export class OrderService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findOrder = await this.orderRepo.findOneBy({ id });
 
@@ -90,11 +90,11 @@ export class OrderService {
     }
   }
 
-  async getUserOrders(user_id: number) {
+  async getUserOrders(user_id: string) {
     try {
       const data = await this.orderRepo.find({
         where: { user_id },
-        relations: ['user', 'carts.product'],
+        relations: ['user', 'carts.product', 'carts.product.photos'],
       });
 
       return { message: 'Success', data };
@@ -103,7 +103,7 @@ export class OrderService {
     }
   }
 
-  async cancelOrder(id: number) {
+  async cancelOrder(id: string) {
     try {
       const findOrder = await this.orderRepo.findOneBy({ id });
 
@@ -119,7 +119,7 @@ export class OrderService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findOrder = await this.orderRepo.findOneBy({ id });
 

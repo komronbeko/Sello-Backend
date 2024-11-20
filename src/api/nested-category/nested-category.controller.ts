@@ -29,7 +29,7 @@ export class NestedCategoryController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.nestedCategoryService.findOne(+id);
+    return this.nestedCategoryService.findOne(id);
   }
 
   @Patch(':id')
@@ -37,11 +37,11 @@ export class NestedCategoryController {
     @Param('id') id: string,
     @Body() updateNestedCategoryDto: UpdateNestedCategoryDto,
   ) {
-    return this.nestedCategoryService.update(+id, updateNestedCategoryDto);
+    return this.nestedCategoryService.update(id, updateNestedCategoryDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.nestedCategoryService.remove(+id);
+    return this.nestedCategoryService.remove(id);
   }
 }

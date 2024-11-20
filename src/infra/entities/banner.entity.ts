@@ -8,7 +8,7 @@ export class BannerEntity extends BaseEntity {
   title: string;
 
   @Column({ nullable: false })
-  catalog_id: number;
+  catalog_id: string;
 
   @ManyToOne(() => CatalogEntity, (catalog) => catalog.banners)
   @JoinColumn({ name: 'catalog_id' })

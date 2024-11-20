@@ -62,7 +62,7 @@ export class AdminsService implements OnModuleInit {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findAdmin = await this.adminsRepo.findOneBy({ id });
 
@@ -74,7 +74,7 @@ export class AdminsService implements OnModuleInit {
     }
   }
 
-  async update(id: number, body: UpdateAdminDto) {
+  async update(id: string, body: UpdateAdminDto) {
     try {
       const findAdmin = await this.adminsRepo.findOneBy({ id });
 
@@ -88,7 +88,7 @@ export class AdminsService implements OnModuleInit {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findAdmin = await this.adminsRepo.findOneBy({ id });
 

@@ -7,7 +7,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { AuthGuard } from 'src/common/guards/auth.guard';
@@ -16,11 +16,16 @@ import { FileUploadDto } from './dto/create-file.dto';
 import { validate } from 'class-validator';
 
 @ApiTags('File')
+@ApiBearerAuth()
 @UseGuards(AuthGuard)
 @Controller('file')
 export class FileController {
   @Post()
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Upload file',
+    type: FileUploadDto,
+  })
   @UseInterceptors(
     FileInterceptor('photo', {
       storage: diskStorage({

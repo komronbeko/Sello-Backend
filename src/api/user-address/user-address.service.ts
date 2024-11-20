@@ -43,7 +43,7 @@ export class UserAddressService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findUserAddress = await this.userAddressRepo.findOneBy({ id });
 
@@ -56,7 +56,7 @@ export class UserAddressService {
     }
   }
 
-  async update(id: number, body: UpdateUserAddressDto) {
+  async update(id: string, body: UpdateUserAddressDto) {
     try {
       const findUserAddress = await this.userAddressRepo.findOneBy({ id });
 
@@ -70,7 +70,7 @@ export class UserAddressService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findUserAddress = await this.userAddressRepo.findOneBy({ id });
 

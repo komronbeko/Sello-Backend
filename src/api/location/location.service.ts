@@ -31,7 +31,7 @@ export class LocationService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findLocation = await this.locationRepo.findOneBy({ id });
 
@@ -43,7 +43,7 @@ export class LocationService {
     }
   }
 
-  async update(id: number, body: UpdateLocationDto) {
+  async update(id: string, body: UpdateLocationDto) {
     try {
       const findLocation = await this.locationRepo.findOneBy({ id });
 
@@ -56,7 +56,7 @@ export class LocationService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findLocation = await this.locationRepo.findOneBy({ id });
 

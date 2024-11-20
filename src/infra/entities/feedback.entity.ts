@@ -9,9 +9,9 @@ export class FeedbackEntity extends BaseEntity {
   text: string;
 
   @Column({ nullable: false })
-  user_id: number;
+  user_id: string;
 
   @ManyToOne(() => UserEntity, (user) => user.feedbacks)
-  @JoinColumn({name: 'user_id'})
-  user: UserEntity
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
 }

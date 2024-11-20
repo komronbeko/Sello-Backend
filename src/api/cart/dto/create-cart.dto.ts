@@ -3,8 +3,8 @@ import {
   IsBoolean,
   IsIn,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
+  IsString,
 } from 'class-validator';
 
 export class CreateCartDto {
@@ -29,7 +29,7 @@ export class CreateCartDto {
     description: 'id of product which user have chosen.',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  product_id: number;
+  product_id: string;
 }

@@ -35,15 +35,15 @@ export class FeedbackService {
     return await this.feedbackRepo.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.feedbackRepo.findOneBy({ id });
   }
 
-  async findByUser(user_id: number) {
+  async findByUser(user_id: string) {
     return await this.feedbackRepo.find({ where: { user_id } });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return await this.feedbackRepo.delete({ id });
   }
 }

@@ -31,7 +31,7 @@ export class DiscountService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findDiscount = await this.discountRepo.findOneBy({ id });
 
@@ -43,7 +43,7 @@ export class DiscountService {
     }
   }
 
-  async update(id: number, body: UpdateDiscountDto) {
+  async update(id: string, body: UpdateDiscountDto) {
     try {
       const findDiscount = await this.discountRepo.findOneBy({ id });
 
@@ -56,7 +56,7 @@ export class DiscountService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const findDiscount = await this.discountRepo.findOneBy({ id });
 
     if (!findDiscount) throw new HttpException('Discount not found', 400);

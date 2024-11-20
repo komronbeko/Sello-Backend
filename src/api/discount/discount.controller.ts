@@ -29,7 +29,7 @@ export class DiscountController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.discountService.findOne(+id);
+    return this.discountService.findOne(id);
   }
 
   @Patch(':id')
@@ -37,11 +37,11 @@ export class DiscountController {
     @Param('id') id: string,
     @Body() updateDiscountDto: UpdateDiscountDto,
   ) {
-    return this.discountService.update(+id, updateDiscountDto);
+    return this.discountService.update(id, updateDiscountDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.discountService.remove(+id);
+    return this.discountService.remove(id);
   }
 }

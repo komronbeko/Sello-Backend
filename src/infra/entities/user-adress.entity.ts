@@ -21,7 +21,7 @@ export class UserAddressEntity extends BaseEntity {
   zip_code: string;
 
   @Column({ nullable: false })
-  user_id: number;
+  user_id: string;
 
   @ManyToOne(() => UserEntity, (user) => user.userAddresses)
   @JoinColumn({ name: 'user_id' })

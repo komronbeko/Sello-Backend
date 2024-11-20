@@ -10,8 +10,9 @@ import { ProductRepo } from 'src/infra/repos/product.repo';
 export class SearchService {
   constructor(
     @InjectRepository(ProductEntity) private readonly productRepo: ProductRepo,
-  ) // @Inject(CACHE_MANAGER) private cacheService: Cache,
-  {}
+  ) {
+    // @Inject(CACHE_MANAGER) private cacheService: Cache,
+  }
 
   async search(searchValue: string): Promise<ProductEntity[] | string> {
     // const cachedData =
@@ -25,7 +26,6 @@ export class SearchService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.nested_category', 'nested_category')
-      .leftJoinAndSelect('product.brand', 'brand')
       .leftJoinAndSelect('product.catalog', 'catalog')
       .leftJoinAndSelect('product.product_infos', 'product_infos')
       .where('product.name ILIKE :name', { name: `%${searchValue}%` })
@@ -37,9 +37,6 @@ export class SearchService {
       })
       .orWhere('nested_category.name ILIKE :nesCatName', {
         nesCatName: `%${searchValue}%`,
-      })
-      .orWhere('brand.name ILIKE :brandName', {
-        brandName: `%${searchValue}%`,
       })
       .orWhere('catalog.name ILIKE :catalogName', {
         catalogName: `%${searchValue}%`,

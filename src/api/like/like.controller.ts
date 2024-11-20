@@ -9,10 +9,11 @@ import {
 } from '@nestjs/common';
 import { LikeService } from './like.service';
 import { CreateLikeDto } from './dto/create-like.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { myReq } from 'src/infra/interfaces/custom-request';
 
+@ApiBearerAuth()
 @UseGuards(AuthGuard)
 @ApiTags('Likes')
 @Controller('like')
@@ -31,7 +32,7 @@ export class LikeController {
 
   @Get('ofuser')
   getUserLikes(@Req() req: myReq) {
-    return this.likeService.getUserLikes(+req.userId);
+    return this.likeService.getUserLikes(req.userId);
   }
 
   // @Delete(':id')
@@ -41,6 +42,6 @@ export class LikeController {
 
   @Delete('/all')
   removeAll(@Req() req: myReq) {
-    return this.likeService.removeAll(+req.userId);
+    return this.likeService.removeAll(req.userId);
   }
 }

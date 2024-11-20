@@ -21,7 +21,7 @@ export class CartService {
     private readonly userRepo: UserRepo,
   ) {}
 
-  async create(body: CreateCartDto, user_id: number) {
+  async create(body: CreateCartDto, user_id: string) {
     try {
       const { product_id } = body;
 
@@ -66,7 +66,7 @@ export class CartService {
   async findAll() {
     try {
       const data = await this.cartRepo.find({
-        relations: ['user', 'product.discount', 'order'],
+        relations: ['user', 'product.discount', 'order', 'product.photos'],
       });
 
       return { message: 'Success', data };
@@ -75,11 +75,11 @@ export class CartService {
     }
   }
 
-  async getUserCarts(user_id: number) {
+  async getUserCarts(user_id: string) {
     try {
       const data = await this.cartRepo.find({
         where: { user_id },
-        relations: ['user', 'product.discount', 'order'],
+        relations: ['user', 'product.discount', 'order', 'product.photos'],
         order: { updated_at: 'ASC' },
       });
 
@@ -89,7 +89,7 @@ export class CartService {
     }
   }
 
-  async update(id: number, body: UpdateCartDto) {
+  async update(id: string, body: UpdateCartDto) {
     try {
       const findOrder = await this.orderRepo.findOneBy({ id: body.order_id });
 
@@ -106,7 +106,7 @@ export class CartService {
     }
   }
 
-  async minusCount(id: number) {
+  async minusCount(id: string) {
     try {
       const findCart = await this.cartRepo.findOneBy({ id });
 
@@ -122,7 +122,7 @@ export class CartService {
     }
   }
 
-  async plusCount(id: number) {
+  async plusCount(id: string) {
     try {
       const findCart = await this.cartRepo.findOneBy({ id });
 
@@ -136,7 +136,7 @@ export class CartService {
     }
   }
 
-  async removeOne(id: number) {
+  async removeOne(id: string) {
     try {
       const findCart = await this.cartRepo.findOneBy({ id });
 
@@ -150,7 +150,7 @@ export class CartService {
     }
   }
 
-  async removeAll(user_id: number) {
+  async removeAll(user_id: string) {
     try {
       await this.cartRepo.delete({ user_id, status: 'unpaid' });
 

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateNestedCategoryDto {
   @ApiProperty({
@@ -14,7 +14,7 @@ export class CreateNestedCategoryDto {
     description: 'id of category which nested-category links',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  category_id: number;
+  category_id: string;
 }

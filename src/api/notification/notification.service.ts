@@ -43,7 +43,7 @@ export class NotificationService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findNotification = await this.notificationRepo.findOneBy({ id });
 
@@ -56,7 +56,7 @@ export class NotificationService {
     }
   }
 
-  async update(id: number, body: UpdateNotificationDto) {
+  async update(id: string, body: UpdateNotificationDto) {
     try {
       const findNotification = await this.notificationRepo.findOneBy({ id });
 
@@ -70,7 +70,7 @@ export class NotificationService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findNotification = await this.notificationRepo.findOneBy({ id });
 

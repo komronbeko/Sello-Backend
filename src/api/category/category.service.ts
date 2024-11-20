@@ -45,7 +45,7 @@ export class CategoryService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findCategory = await this.categoryRepo.findOneBy({ id });
 
@@ -57,7 +57,7 @@ export class CategoryService {
     }
   }
 
-  async update(id: number, body: UpdateCategoryDto) {
+  async update(id: string, body: UpdateCategoryDto) {
     try {
       const findCategory = await this.categoryRepo.findOneBy({ id });
 
@@ -70,7 +70,7 @@ export class CategoryService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findCategory = await this.categoryRepo.findOneBy({ id });
 

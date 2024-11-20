@@ -9,7 +9,7 @@ export class NestedCategoryEntity extends BaseEntity {
   name: string;
 
   @Column({ nullable: false })
-  category_id: number;
+  category_id: string;
 
   @ManyToOne(() => CategoryEntity, (category) => category.nestedCategories)
   @JoinColumn({ name: 'category_id' })

@@ -33,7 +33,7 @@ export class PostamatService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findPostamat = await this.postamatRepo.findOneBy({ id });
 
@@ -45,7 +45,7 @@ export class PostamatService {
     }
   }
 
-  async update(id: number, body: UpdatePostamatDto) {
+  async update(id: string, body: UpdatePostamatDto) {
     try {
       const findPostamat = await this.postamatRepo.findOneBy({ id });
 
@@ -58,7 +58,7 @@ export class PostamatService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findPostamat = await this.postamatRepo.findOneBy({ id });
 

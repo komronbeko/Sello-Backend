@@ -6,9 +6,9 @@ export class UpdateReviewDto {
     description: 'The ID of the review',
     default: 0,
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  id: number;
+  id: string;
 
   @ApiProperty({
     description: 'star counts of the product',

@@ -13,22 +13,25 @@ export class CartEntity extends BaseEntity {
   status: string;
 
   @Column({ nullable: false })
-  user_id: number;
+  user_id: string;
 
-  @Column({ nullable: false })
-  product_id: number;
+  @Column({ nullable: true })
+  product_id: string;
 
   @Column({ nullable: false, default: 0 })
   count: number;
 
   @Column({ nullable: true })
-  order_id: number;
+  order_id: string;
 
   @ManyToOne(() => UserEntity, (user) => user.carts)
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
-  @ManyToOne(() => ProductEntity, (product) => product.carts)
+  @ManyToOne(() => ProductEntity, (product) => product.carts, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'product_id' })
   product: ProductEntity;
 

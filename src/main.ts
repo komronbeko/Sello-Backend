@@ -25,6 +25,7 @@ async function bootstrap() {
     .setTitle('Blog documantation')
     .setDescription('Blogs API description. You can test them out in-site!')
     .setVersion('1.0')
+    .addBearerAuth()
     .addTag('Sello')
     .build();
   const document = SwaggerModule.createDocument(app, config);

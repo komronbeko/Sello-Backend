@@ -19,14 +19,16 @@ export class UsersService {
   ) {}
   async findAll() {
     try {
-      const data = await this.userRepo.find({ relations: ['carts', 'likes'] });
+      const data = await this.userRepo.find({
+        relations: ['carts', 'likes', 'products'],
+      });
       return { message: 'success', data };
     } catch (error) {
       throw new HttpException(error.message, 400);
     }
   }
 
-  async replenishUserBalance(user_id: number, body: ReplenishBalanceDto) {
+  async replenishUserBalance(user_id: string, body: ReplenishBalanceDto) {
     try {
       const { amount, id } = body;
 
@@ -53,11 +55,11 @@ export class UsersService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findUser = await this.userRepo.findOne({
         where: { id },
-        relations: ['carts', 'likes'],
+        relations: ['carts', 'likes', 'products'],
       } as FindOneOptions);
 
       if (!findUser) throw new HttpException('User not found', 400);
@@ -68,7 +70,7 @@ export class UsersService {
     }
   }
 
-  async update(id: number, body: UpdateUserDto) {
+  async update(id: string, body: UpdateUserDto) {
     try {
       const findUser = await this.userRepo.findOneBy({ id });
 

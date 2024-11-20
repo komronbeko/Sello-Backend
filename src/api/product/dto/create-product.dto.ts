@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsAlphanumeric,
+  IsArray,
   IsBoolean,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -38,16 +38,16 @@ export class CreateProductDto {
     default: true,
   })
   @IsBoolean()
-  @IsNotEmpty()
+  @IsOptional()
   new: boolean;
 
   @ApiProperty({
-    description: 'photo url for product',
-    default: '18b60227-f8cb-439c-a2d7-d18e47732038.jpg',
+    description: 'photo urls for product',
+    default: ['18b60227-f8cb-439c-a2d7-d18e47732038.jpg'],
   })
-  @IsString()
-  @IsNotEmpty()
-  photo: string;
+  @IsArray()
+  @IsOptional()
+  photoPaths: string[];
 
   @ApiProperty({
     description: 'whether it is deliverable or not',
@@ -56,22 +56,6 @@ export class CreateProductDto {
   @IsBoolean()
   @IsNotEmpty()
   delivery: boolean;
-
-  @ApiProperty({
-    description: 'alphanumeric id of branch',
-    default: 'ID4335',
-  })
-  @IsAlphanumeric()
-  @IsNotEmpty()
-  branch_id: string;
-
-  @ApiProperty({
-    description: 'is it possible to pickup?',
-    default: true,
-  })
-  @IsBoolean()
-  @IsNotEmpty()
-  pickup: boolean;
 
   @ApiProperty({
     description: 'the country where the product will be delivered from',
@@ -98,42 +82,42 @@ export class CreateProductDto {
   unpacked: boolean;
 
   @ApiProperty({
+    description: 'is it verified by Admin?',
+    default: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  is_verified: boolean;
+
+  @ApiProperty({
     description: 'the id of catalog to which product belongs',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  catalog_id: number;
+  catalog_id: string;
 
   @ApiProperty({
     description: 'the id of category to which product belongs',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  category_id: number;
+  category_id: string;
 
   @ApiProperty({
     description: 'the id of nested-category to which product belongs',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  nested_category_id: number;
+  nested_category_id: string;
 
   @ApiProperty({
     description: 'the id of discount the product has',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  discount_id: number;
-
-  @ApiProperty({
-    description: 'the id of brand by which the product was made',
-    default: 1,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  brand_id: number;
+  discount_id: string;
 }

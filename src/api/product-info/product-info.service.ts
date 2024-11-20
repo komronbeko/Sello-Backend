@@ -45,7 +45,7 @@ export class ProductInfoService {
     }
   }
 
-  async infosForProduct(product_id: number) {
+  async infosForProduct(product_id: string) {
     try {
       const findProductInfos = await this.productInfoRepo.findBy({
         product_id,
@@ -57,7 +57,7 @@ export class ProductInfoService {
     }
   }
 
-  async update(id: number, body: UpdateProductInfoDto) {
+  async update(id: string, body: UpdateProductInfoDto) {
     try {
       const findProductInfo = await this.productInfoRepo.findOneBy({ id });
 
@@ -71,7 +71,7 @@ export class ProductInfoService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findProductInfo = await this.productInfoRepo.findOneBy({ id });
 

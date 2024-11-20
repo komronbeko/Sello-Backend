@@ -31,7 +31,7 @@ export class PartnerService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findPartner = await this.partnerRepo.findOneBy({ id });
 
@@ -43,7 +43,7 @@ export class PartnerService {
     }
   }
 
-  async update(id: number, body: UpdatePartnerDto) {
+  async update(id: string, body: UpdatePartnerDto) {
     try {
       const findPartner = await this.partnerRepo.findOneBy({ id });
 
@@ -56,7 +56,7 @@ export class PartnerService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findPartner = await this.partnerRepo.findOneBy({ id });
 

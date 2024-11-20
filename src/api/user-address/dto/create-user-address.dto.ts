@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateUserAddressDto {
   @ApiProperty({
@@ -46,7 +46,7 @@ export class CreateUserAddressDto {
     description: 'id of user which address links',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  user_id: number;
+  user_id: string;
 }

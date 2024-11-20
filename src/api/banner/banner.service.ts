@@ -41,7 +41,7 @@ export class BannerService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findBanner = await this.bannerRepo.findOneBy({ id });
 
@@ -53,7 +53,7 @@ export class BannerService {
     }
   }
 
-  async update(id: number, body: UpdateBannerDto) {
+  async update(id: string, body: UpdateBannerDto) {
     try {
       const findBanner = await this.bannerRepo.findOneBy({ id });
 
@@ -67,7 +67,7 @@ export class BannerService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findBanner = await this.bannerRepo.findOneBy({ id });
 

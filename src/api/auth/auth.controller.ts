@@ -29,12 +29,12 @@ export class AuthController {
 
   @Post('verify-otp/:id')
   otpVerify(@Param('id') id: string, @Body() body: VerifyDto) {
-    return this.authService.otpVerify(+id, body);
+    return this.authService.otpVerify(id, body);
   }
 
   @Post('verify-user/:id')
   userVerify(@Param('id') id: string, @Body() body: VerifyDto) {
-    return this.authService.userVerify(+id, body);
+    return this.authService.userVerify(id, body);
   }
 
   @Post('register')
@@ -44,11 +44,11 @@ export class AuthController {
 
   @Patch('pass-reset/:id')
   passReset(@Param('id') user_id: string, @Body() body: PassResetDto) {
-    return this.authService.passReset(+user_id, body);
+    return this.authService.passReset(user_id, body);
   }
 
   @Delete('/logout/:id')
   logout(@Param('id') id: string) {
-    return this.authService.userLogout(+id);
+    return this.authService.userLogout(id);
   }
 }
