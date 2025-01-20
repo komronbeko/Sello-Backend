@@ -20,6 +20,7 @@ import { PhotoEntity } from 'src/infra/entities/photo.entity';
 import { photoRepo } from 'src/infra/repos/photo.repo';
 import { v4 as uuidv4 } from 'uuid';
 import { VerifyProdDto } from './dto/verify-product.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Injectable()
 export class ProductService {
@@ -87,9 +88,10 @@ export class ProductService {
     }
   }
 
-  async findAll() {
+  async findAll({ page, limit }: PaginationDto) {
     try {
-      const data = await this.productRepo.find({
+      const offset = (page - 1) * limit;
+      const [data, total] = await this.productRepo.findAndCount({
         where: { is_verified: true },
         relations: [
           'discount',
@@ -102,9 +104,16 @@ export class ProductService {
           'user',
           'photos',
         ],
+        skip: offset,
+        take: limit,
       });
 
-      return { message: 'success', data };
+      return {
+        data,
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      };
     } catch (error) {
       throw new HttpException(error.message, 400);
     }

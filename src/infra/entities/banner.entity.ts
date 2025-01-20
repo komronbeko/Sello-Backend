@@ -10,10 +10,10 @@ export class BannerEntity extends BaseEntity {
   @Column({ nullable: false })
   catalog_id: string;
 
+  @Column({ nullable: false })
+  photo: string;
+
   @ManyToOne(() => CatalogEntity, (catalog) => catalog.banners)
   @JoinColumn({ name: 'catalog_id' })
   catalog: CatalogEntity;
-
-  @Column({ nullable: false })
-  photo: string;
 }

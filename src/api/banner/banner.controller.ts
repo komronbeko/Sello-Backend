@@ -11,8 +11,9 @@ import {
 import { BannerService } from './banner.service';
 import { CreateBannerDto } from './dto/create-banner.dto';
 import { UpdateBannerDto } from './dto/update-banner.dto';
-import { isAdminGuard } from 'src/common/guards/is-admin.guard';
+// import { isAdminGuard } from 'src/common/guards/is-admin.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @ApiTags('Banners')
 @Controller('banner')
@@ -20,7 +21,7 @@ export class BannerController {
   constructor(private readonly bannerService: BannerService) {}
 
   @ApiBearerAuth()
-  @UseGuards(isAdminGuard)
+  @UseGuards(AuthGuard)
   @Post()
   create(@Body() createBannerDto: CreateBannerDto) {
     return this.bannerService.create(createBannerDto);
@@ -37,14 +38,14 @@ export class BannerController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(isAdminGuard)
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBannerDto: UpdateBannerDto) {
     return this.bannerService.update(id, updateBannerDto);
   }
 
   @ApiBearerAuth()
-  @UseGuards(isAdminGuard)
+  // @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.bannerService.remove(id);
