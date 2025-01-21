@@ -179,7 +179,7 @@ export class AuthService {
     }
   }
 
-  async otpVerify(id: number, body: VerifyDto) {
+  async otpVerify(id: string, body: VerifyDto) {
     try {
       const { verify_code, code } = body;
 
@@ -198,7 +198,7 @@ export class AuthService {
     }
   }
 
-  async userVerify(id: number, body: VerifyDto) {
+  async userVerify(id: string, body: VerifyDto) {
     try {
       const { verify_code, code } = body;
 
@@ -225,7 +225,7 @@ export class AuthService {
     }
   }
 
-  async passReset(user_id: number, body: PassResetDto) {
+  async passReset(user_id: string, body: PassResetDto) {
     const { new_pass } = body;
     const findUser = await this.usersRepo.findOneBy({ id: user_id });
 
@@ -242,7 +242,7 @@ export class AuthService {
     return { message: 'success', token };
   }
 
-  async userLogout(id: number) {
+  async userLogout(id: string) {
     try {
       const findUser = await this.usersRepo.findOneBy({ id });
 

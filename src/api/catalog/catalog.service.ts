@@ -32,7 +32,7 @@ export class CatalogService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findCatalog = await this.catalogRepo.findOneBy({ id });
 
@@ -44,7 +44,7 @@ export class CatalogService {
     }
   }
 
-  async update(id: number, body: UpdateCatalogDto) {
+  async update(id: string, body: UpdateCatalogDto) {
     try {
       const findCatalog = await this.catalogRepo.findOneBy({ id });
 
@@ -57,7 +57,7 @@ export class CatalogService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findCatalog = await this.catalogRepo.findOneBy({ id });
 

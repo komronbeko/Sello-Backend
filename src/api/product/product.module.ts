@@ -7,9 +7,11 @@ import { ProductEntity } from 'src/infra/entities/product.entity';
 import { CatalogEntity } from 'src/infra/entities/catalog.entity';
 import { CategoryEntity } from 'src/infra/entities/category.entity';
 import { NestedCategoryEntity } from 'src/infra/entities/nested-category.entity';
-import { DiscountEntity } from 'src/infra/entities/discount.entity';
-import { BrandEntity } from 'src/infra/entities/brand.entity';
 import { ReviewEntity } from 'src/infra/entities/review.entity';
+import { UserEntity } from 'src/infra/entities/user.entity';
+import { AdminEntity } from 'src/infra/entities/admin.entity';
+import { ProductHistoryEntity } from 'src/infra/entities/product-history.entity';
+import { PhotoEntity } from 'src/infra/entities/photo.entity';
 
 @Module({
   imports: [
@@ -18,9 +20,11 @@ import { ReviewEntity } from 'src/infra/entities/review.entity';
       CatalogEntity,
       CategoryEntity,
       NestedCategoryEntity,
-      DiscountEntity,
-      BrandEntity,
       ReviewEntity,
+      UserEntity,
+      AdminEntity,
+      ProductHistoryEntity,
+      PhotoEntity,
     ]),
   ],
   controllers: [ProductController],

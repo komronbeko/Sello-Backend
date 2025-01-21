@@ -16,13 +16,13 @@ export class DeliveryEntity extends BaseEntity {
   delivery_date: string;
 
   @Column({ nullable: false })
-  user_address_id: number;
+  user_address_id: string;
 
   @Column({ nullable: false })
-  location_id: number;
+  location_id: string;
 
   @Column({ nullable: false })
-  postamat_id: number;
+  postamat_id: string;
 
   @ManyToOne(() => PostamatEntity, (postamat) => postamat.deliveries)
   @JoinColumn({ name: 'postamat_id' })

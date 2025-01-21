@@ -9,7 +9,6 @@ import { UsersModule } from './api/users/users.module';
 import { FileModule } from './api/file/file.module';
 import { AuthModule } from './api/auth/auth.module';
 import { BannerModule } from './api/banner/banner.module';
-import { BrandModule } from './api/brand/brand.module';
 import { CartModule } from './api/cart/cart.module';
 import { CatalogModule } from './api/catalog/catalog.module';
 import { CategoryModule } from './api/category/category.module';
@@ -25,13 +24,11 @@ import { ProductModule } from './api/product/product.module';
 import { UserAddressModule } from './api/user-address/user-address.module';
 import { PostamatModule } from './api/postamat/postamat.module';
 import { DeliveryModule } from './api/delivery/delivery.module';
-import { FilterProductsModule } from './api/filter-products/filter-products.module';
 import { SearchModule } from './api/search/search.module';
 // import { CacheModule } from '@nestjs/cache-manager';
 import { ReviewsModule } from './api/reviews/reviews.module';
 import { FeedbackModule } from './api/feedback/feedback.module';
 // import * as redisStore from 'cache-manager-redis-store';
-
 
 @Module({
   imports: [
@@ -53,7 +50,6 @@ import { FeedbackModule } from './api/feedback/feedback.module';
     FileModule,
     AuthModule,
     BannerModule,
-    BrandModule,
     CartModule,
     CatalogModule,
     CategoryModule,
@@ -69,7 +65,6 @@ import { FeedbackModule } from './api/feedback/feedback.module';
     UserAddressModule,
     PostamatModule,
     DeliveryModule,
-    FilterProductsModule,
     SearchModule,
     ReviewsModule,
     FeedbackModule,

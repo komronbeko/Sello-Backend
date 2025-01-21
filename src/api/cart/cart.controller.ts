@@ -12,11 +12,12 @@ import {
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { myReq } from 'src/infra/interfaces/custom-request';
 
 @ApiTags('Carts')
+@ApiBearerAuth()
 @UseGuards(AuthGuard)
 @Controller('cart')
 export class CartController {
@@ -24,7 +25,7 @@ export class CartController {
 
   @Post()
   create(@Body() createCartDto: CreateCartDto, @Req() request: myReq) {
-    return this.cartService.create(createCartDto, +request.userId);
+    return this.cartService.create(createCartDto, request.userId);
   }
 
   @Get()
@@ -34,22 +35,22 @@ export class CartController {
 
   @Get('/ofuser')
   getUserCarts(@Req() req: myReq) {
-    return this.cartService.getUserCarts(+req.userId);
+    return this.cartService.getUserCarts(req.userId);
   }
 
   @Patch()
   update(@Req() req: myReq, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartService.update(+req.userId, updateCartDto);
+    return this.cartService.update(req.userId, updateCartDto);
   }
 
   @Patch('/count/minus/:id')
   minusCount(@Param('id') id: string) {
-    return this.cartService.minusCount(+id);
+    return this.cartService.minusCount(id);
   }
 
   @Patch('/count/plus/:id')
   plusCount(@Param('id') id: string) {
-    return this.cartService.plusCount(+id);
+    return this.cartService.plusCount(id);
   }
 
   @Delete('/all')
@@ -59,6 +60,6 @@ export class CartController {
 
   @Delete(':id')
   removeOne(@Param('id') id: string) {
-    return this.cartService.removeOne(+id);
+    return this.cartService.removeOne(id);
   }
 }

@@ -29,7 +29,7 @@ export class PostamatController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.postamatService.findOne(+id);
+    return this.postamatService.findOne(id);
   }
 
   @Patch(':id')
@@ -37,11 +37,11 @@ export class PostamatController {
     @Param('id') id: string,
     @Body() updatePostamatDto: UpdatePostamatDto,
   ) {
-    return this.postamatService.update(+id, updatePostamatDto);
+    return this.postamatService.update(id, updatePostamatDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.postamatService.remove(+id);
+    return this.postamatService.remove(id);
   }
 }

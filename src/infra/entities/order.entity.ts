@@ -18,7 +18,7 @@ export class OrderEntity extends BaseEntity {
   location: string;
 
   @Column({ nullable: false })
-  user_id: number;
+  user_id: string;
 
   @OneToMany(() => CartEntity, (cart) => cart.order, { cascade: true })
   carts: CartEntity[];

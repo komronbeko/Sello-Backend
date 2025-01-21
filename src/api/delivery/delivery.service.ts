@@ -68,7 +68,7 @@ export class DeliveryService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findDelivery = await this.deliveryRepo.findOneBy({ id });
 
@@ -80,7 +80,7 @@ export class DeliveryService {
     }
   }
 
-  async update(id: number, body: UpdateDeliveryDto) {
+  async update(id: string, body: UpdateDeliveryDto) {
     try {
       const findDelivery = await this.deliveryRepo.findOneBy({ id });
 
@@ -93,7 +93,7 @@ export class DeliveryService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findDelivery = await this.deliveryRepo.findOneBy({ id });
 

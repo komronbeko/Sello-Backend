@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateBannerDto {
   @ApiProperty({
@@ -22,7 +22,7 @@ export class CreateBannerDto {
     description: 'id of catalog which banner links',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  catalog_id: number;
+  catalog_id: string;
 }

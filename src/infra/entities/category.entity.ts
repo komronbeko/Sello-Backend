@@ -10,7 +10,7 @@ export class CategoryEntity extends BaseEntity {
   name: string;
 
   @Column({ nullable: false })
-  catalog_id: number;
+  catalog_id: string;
 
   @ManyToOne(() => CatalogEntity, (catalog) => catalog.categories)
   @JoinColumn({ name: 'catalog_id' })

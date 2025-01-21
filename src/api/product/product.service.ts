@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -8,74 +9,134 @@ import { CatalogEntity } from 'src/infra/entities/catalog.entity';
 import { CatalogRepo } from 'src/infra/repos/catalog.repo';
 import { CategoryEntity } from 'src/infra/entities/category.entity';
 import { CategoryRepo } from 'src/infra/repos/category.repo';
-import { DiscountEntity } from 'src/infra/entities/discount.entity';
-import { DiscountRepo } from 'src/infra/repos/discount.repo';
 import { NestedCategoryEntity } from 'src/infra/entities/nested-category.entity';
 import { NestedCategoryRepo } from 'src/infra/repos/nested-category.repo';
-import { BrandRepo } from 'src/infra/repos/brand.repo';
-import { BrandEntity } from 'src/infra/entities/brand.entity';
 import { FindOneOptions } from 'typeorm';
+import { UserEntity } from 'src/infra/entities/user.entity';
+import { UserRepo } from 'src/infra/repos/user.repo';
+import { ProductHistoryEntity } from 'src/infra/entities/product-history.entity';
+import { ProductHistoryRepo } from 'src/infra/repos/productHistory.repo';
+import { PhotoEntity } from 'src/infra/entities/photo.entity';
+import { photoRepo } from 'src/infra/repos/photo.repo';
+import { v4 as uuidv4 } from 'uuid';
+import { VerifyProdDto } from './dto/verify-product.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(ProductEntity) private readonly productRepo: ProductRepo,
+    @InjectRepository(PhotoEntity) private readonly photoRepo: photoRepo,
+    @InjectRepository(ProductHistoryEntity)
+    private readonly prodHisRepo: ProductHistoryRepo,
     @InjectRepository(CatalogEntity) private readonly catalogRepo: CatalogRepo,
-    @InjectRepository(BrandEntity) private readonly brandRepo: BrandRepo,
+    @InjectRepository(UserEntity) private readonly userRepo: UserRepo,
     @InjectRepository(CategoryEntity)
     private readonly categoryRepo: CategoryRepo,
-    @InjectRepository(DiscountEntity)
-    private readonly discountRepo: DiscountRepo,
     @InjectRepository(NestedCategoryEntity)
     private readonly nestedCategoryRepo: NestedCategoryRepo,
   ) {}
-  async create(body: CreateProductDto) {
+
+  async create(body: CreateProductDto, user_id: string) {
     try {
-      const { catalog_id, category_id, nested_category_id, brand_id } = body;
+      const { catalog_id, category_id, nested_category_id, photoPaths } = body;
+      const product_id = uuidv4();
 
-      const findCatalog = await this.catalogRepo.findOneBy({ id: catalog_id });
-      const findBrand = await this.brandRepo.findOneBy({ id: brand_id });
-      const findCategory = await this.categoryRepo.findOneBy({
-        id: category_id,
+      // Run all validations concurrently
+      const [findUser, findCatalog, findCategory, findNestedCategory] =
+        await Promise.all([
+          this.userRepo.findOneBy({ id: user_id }),
+          this.catalogRepo.findOneBy({ id: catalog_id }),
+          this.categoryRepo.findOneBy({ id: category_id }),
+          this.nestedCategoryRepo.findOneBy({ id: nested_category_id }),
+        ]);
+
+      if (!findUser) throw new HttpException('User not found', 400);
+      if (!findCatalog) throw new HttpException('Catalog not found', 400);
+      if (!findCategory) throw new HttpException('Category not found', 400);
+      if (!findNestedCategory)
+        throw new HttpException('Nested category not found', 400);
+
+      // Create and save product
+      const newProduct = this.productRepo.create({
+        ...body,
+        user_id,
+        id: product_id,
       });
-      const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
-        id: nested_category_id,
-      });
-
-      if (!findCatalog || !findCategory || !findNestedCategory || !findBrand) {
-        throw new HttpException('IDs do not exist. Check the IDs first!', 400);
-      }
-
-      const newProduct = await this.productRepo.create(body);
       await this.productRepo.save(newProduct);
-      return { message: 'success', data: newProduct };
+
+      // Create and save photo paths
+      const photoData = photoPaths.map((photo) => {
+        const photoEntity = new PhotoEntity();
+        photoEntity.product_id = product_id;
+        photoEntity.path = photo;
+        return photoEntity;
+      });
+
+      await this.photoRepo.save(photoData);
+
+      // Return success response
+      return {
+        message: 'success',
+        data: { product: newProduct, photos: photoData },
+      };
     } catch (error) {
-      throw new HttpException(error.message, 400);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('An unexpected error occurred', 500);
     }
   }
 
-  async findAll() {
+  async findAll({ page, limit }: PaginationDto) {
     try {
-      const data = await this.productRepo.find({
+      const offset = (page - 1) * limit;
+      const [data, total] = await this.productRepo.findAndCount({
+        where: { is_verified: true },
         relations: [
           'discount',
           'category',
           'nested_category',
-          'brand',
           'catalog',
           'product_infos',
           'likes',
           'carts',
+          'user',
+          'photos',
         ],
+        skip: offset,
+        take: limit,
       });
 
-      return { message: 'success', data };
+      return {
+        data,
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      };
     } catch (error) {
       throw new HttpException(error.message, 400);
     }
   }
 
-  async findOne(id: number) {
+  async userProducts(user_id: string) {
+    try {
+      const user = await this.userRepo.findOne({ where: { id: user_id } });
+
+      if (!user) throw new HttpException('User not found', 401);
+
+      const userProducts = await this.productRepo.find({
+        where: { user_id },
+        relations: ['photos'],
+      });
+
+      return { message: 'success', data: userProducts };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
+  }
+
+  async findOne(id: string) {
     try {
       const findProduct = await this.productRepo.findOne({
         where: { id },
@@ -83,9 +144,10 @@ export class ProductService {
           'discount',
           'category',
           'nested_category',
-          'brand',
           'catalog',
           'product_infos',
+          'user',
+          'photos',
         ],
       } as FindOneOptions);
 
@@ -97,14 +159,62 @@ export class ProductService {
     }
   }
 
+  async getUnverified() {
+    try {
+      const data = await this.productRepo.find({
+        where: { is_verified: false },
+        relations: [
+          'discount',
+          'category',
+          'nested_category',
+          'catalog',
+          'product_infos',
+          'likes',
+          'carts',
+          'user',
+          'photos',
+        ],
+      });
+
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
+  }
+
+  async verifyProduct(body: VerifyProdDto) {
+    try {
+      const findProduct = await this.productRepo.findOneBy({
+        id: body.product_id,
+      });
+
+      if (!findProduct) throw new HttpException('Product not found', 400);
+
+      await this.productRepo.update(body.product_id, { is_verified: true });
+
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
+  }
+
+  async fetchDeleted() {
+    try {
+      const data = await this.prodHisRepo.find();
+
+      return { message: 'success', data };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
+  }
+
   async sort(
     value: string,
-    catalog_id: number,
-    category_id: number,
-    from: number,
-    to: number,
+    catalog_id: string,
+    category_id: string,
+    from: string,
+    to: string,
     discounts_arr: string,
-    brands_arr: string,
     sub_categories_arr: string,
     product_infos_arr: string,
   ) {
@@ -114,12 +224,15 @@ export class ProductService {
         .leftJoinAndSelect('product.catalog', 'catalog')
         .leftJoinAndSelect('product.category', 'category')
         .leftJoinAndSelect('product.product_infos', 'product_info')
-        .leftJoinAndSelect('product.brand', 'brand')
         .leftJoinAndSelect('product.nested_category', 'nested_category')
-        .leftJoinAndSelect('product.discount', 'discount');
+        .leftJoinAndSelect('product.discount', 'discount')
+        .leftJoinAndSelect('product.photos', 'photos')
+        .where('is_verified = true');
 
       if (catalog_id) {
-        query = query.where('product.catalog_id = :catalog_id', { catalog_id });
+        query = query.andWhere('product.catalog_id = :catalog_id', {
+          catalog_id,
+        });
       }
 
       if (category_id) {
@@ -146,12 +259,6 @@ export class ProductService {
           'nested_category.name IN (:...subCategoriesArr)',
           { subCategoriesArr: JSON.parse(sub_categories_arr) },
         );
-      }
-
-      if (brands_arr && JSON.parse(brands_arr).length) {
-        query = query.andWhere('brand.name IN (:...brandsArr)', {
-          brandsArr: JSON.parse(brands_arr),
-        });
       }
 
       if (product_infos_arr && JSON.parse(product_infos_arr).length) {
@@ -201,7 +308,7 @@ export class ProductService {
     }
   }
 
-  async update(id: number, body: UpdateProductDto) {
+  async update(id: string, body: UpdateProductDto) {
     try {
       const findProduct = await this.productRepo.findOneBy({ id });
 
@@ -214,13 +321,80 @@ export class ProductService {
     }
   }
 
-  async remove(id: number) {
+  async deleteUserProducts(user_id: string) {
     try {
-      const findProduct = await this.productRepo.findOneBy({ id });
+      const user = await this.userRepo.findOne({ where: { id: user_id } });
+      if (!user) throw new HttpException('User not found', 404);
 
-      if (!findProduct) throw new HttpException('Product not found', 400);
+      const products = await this.productRepo.find({ where: { user_id } });
+
+      if (products.length === 0) {
+        throw new HttpException('No products found for this user', 404);
+      }
+
+      const productHistoryEntries = products.map((product) => {
+        const productHistory = new ProductHistoryEntity();
+        Object.assign(productHistory, product);
+        productHistory.original_product_id = product.id;
+        productHistory.deleted_at = new Date();
+        productHistory.deleted_by = user_id;
+        return productHistory;
+      });
+
+      await this.prodHisRepo.save(productHistoryEntries);
+
+      await this.productRepo.delete({ user_id });
+
+      return { message: 'Deleted Successfully' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
+  }
+
+  async delete(id: string, user_id: string) {
+    try {
+      const product = await this.productRepo.findOneBy({ id });
+
+      if (!product) throw new HttpException('Product not found', 400);
+
+      const productHistory = new ProductHistoryEntity();
+      Object.assign(productHistory, product);
+      productHistory.original_product_id = id;
+      productHistory.deleted_at = new Date();
+      productHistory.deleted_by = user_id;
+
+      await this.prodHisRepo.save(productHistory);
 
       await this.productRepo.delete(id);
+
+      return { message: 'success' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
+  }
+
+  async restoreProduct(product_id: string) {
+    try {
+      const productHistory = await this.prodHisRepo.findOne({
+        where: { original_product_id: product_id },
+      });
+
+      if (!productHistory)
+        throw new HttpException(
+          'Product not found in history or already restored',
+          404,
+        );
+
+      const { deleted_at, deleted_by, original_product_id, ...productData } =
+        productHistory;
+
+      const restoredProduct = this.productRepo.create({
+        ...productData,
+      });
+
+      await this.productRepo.save(restoredProduct);
+
+      await this.prodHisRepo.delete({ original_product_id });
 
       return { message: 'success' };
     } catch (error) {

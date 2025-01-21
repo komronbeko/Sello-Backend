@@ -10,10 +10,13 @@ export class ProductInfoEntity extends BaseEntity {
   @Column({ nullable: false })
   value: string;
 
-  @Column({ nullable: false })
-  product_id: number;
+  @Column()
+  product_id: string;
 
-  @ManyToOne(() => ProductEntity, (product) => product.product_infos)
+  @ManyToOne(() => ProductEntity, (product) => product.product_infos, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'product_id' })
   product: ProductEntity;
 }

@@ -45,7 +45,7 @@ export class NestedCategoryService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
         id,
@@ -60,7 +60,7 @@ export class NestedCategoryService {
     }
   }
 
-  async update(id: number, body: UpdateNestedCategoryDto) {
+  async update(id: string, body: UpdateNestedCategoryDto) {
     try {
       const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
         id,
@@ -76,7 +76,7 @@ export class NestedCategoryService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findNestedCategory = await this.nestedCategoryRepo.findOneBy({
         id,

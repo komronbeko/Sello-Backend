@@ -10,10 +10,11 @@ import {
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { myReq } from 'src/infra/interfaces/custom-request';
 
+@ApiBearerAuth()
 @UseGuards(AuthGuard)
 @ApiTags('Orders')
 @Controller('order')
@@ -32,21 +33,21 @@ export class OrderController {
 
   @Get('/one/:id')
   findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
+    return this.orderService.findOne(id);
   }
 
   @Get('/ofuser')
   getUserOrders(@Req() req: myReq) {
-    return this.orderService.getUserOrders(+req.userId);
+    return this.orderService.getUserOrders(req.userId);
   }
 
   @Delete('cancel/:id')
   update(@Param('id') id: string) {
-    return this.orderService.cancelOrder(+id);
+    return this.orderService.cancelOrder(id);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
+    return this.orderService.remove(id);
   }
 }

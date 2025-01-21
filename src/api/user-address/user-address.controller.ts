@@ -29,7 +29,7 @@ export class UserAddressController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.userAddressService.findOne(+id);
+    return this.userAddressService.findOne(id);
   }
 
   @Patch(':id')
@@ -37,11 +37,11 @@ export class UserAddressController {
     @Param('id') id: string,
     @Body() updateUserAddressDto: UpdateUserAddressDto,
   ) {
-    return this.userAddressService.update(+id, updateUserAddressDto);
+    return this.userAddressService.update(id, updateUserAddressDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userAddressService.remove(+id);
+    return this.userAddressService.remove(id);
   }
 }

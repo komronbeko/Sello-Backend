@@ -29,16 +29,16 @@ export class CatalogController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.catalogService.findOne(+id);
+    return this.catalogService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCatalogDto: UpdateCatalogDto) {
-    return this.catalogService.update(+id, updateCatalogDto);
+    return this.catalogService.update(id, updateCatalogDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.catalogService.remove(+id);
+    return this.catalogService.remove(id);
   }
 }

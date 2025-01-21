@@ -2,13 +2,14 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { DiscountEntity } from './discount.entity';
 import { CategoryEntity } from './category.entity';
 import { NestedCategoryEntity } from './nested-category.entity';
-import { BrandEntity } from './brand.entity';
 import { BaseEntity } from './base.entity';
 import { LikeEntity } from './like.entity';
 import { CartEntity } from './cart.entity';
 import { ProductInfoEntity } from './product-info.entity';
 import { CatalogEntity } from './catalog.entity';
 import { ReviewEntity } from './review.entity';
+import { UserEntity } from './user.entity';
+import { PhotoEntity } from './photo.entity';
 
 @Entity({ name: 'products' })
 export class ProductEntity extends BaseEntity {
@@ -24,14 +25,8 @@ export class ProductEntity extends BaseEntity {
   @Column({ nullable: false, default: false })
   new: boolean;
 
-  @Column({ nullable: false })
-  photo: string;
-
   @Column({ nullable: false, default: false })
   delivery: boolean;
-
-  @Column({ nullable: false, default: false })
-  pickup: boolean;
 
   @Column({ nullable: false })
   delivery_country: string;
@@ -42,20 +37,26 @@ export class ProductEntity extends BaseEntity {
   @Column({ nullable: false, default: false })
   unpacked: boolean;
 
-  @Column({ nullable: true })
-  discount_id: number;
+  @Column({ nullable: true, default: false })
+  is_verified: boolean;
 
-  @Column({ nullable: false })
-  category_id: number;
-
-  @Column({ nullable: false })
-  nested_category_id: number;
+  @Column({ nullable: true, default: false })
+  by_owner: boolean;
 
   @Column({ nullable: true })
-  brand_id: number;
+  discount_id: string;
 
   @Column({ nullable: false })
-  catalog_id: number;
+  user_id: string;
+
+  @Column({ nullable: false })
+  category_id: string;
+
+  @Column({ nullable: false })
+  nested_category_id: string;
+
+  @Column({ nullable: false })
+  catalog_id: string;
 
   @ManyToOne(() => DiscountEntity, (discount) => discount.products)
   @JoinColumn({ name: 'discount_id' })
@@ -72,25 +73,26 @@ export class ProductEntity extends BaseEntity {
   @JoinColumn({ name: 'nested_category_id' })
   nested_category: NestedCategoryEntity;
 
-  @ManyToOne(() => BrandEntity, (brand) => brand.products)
-  @JoinColumn({ name: 'brand_id' })
-  brand: BrandEntity;
-
   @ManyToOne(() => CatalogEntity, (catalog) => catalog.products)
   @JoinColumn({ name: 'catalog_id' })
   catalog: CatalogEntity;
 
-  @OneToMany(() => ProductInfoEntity, (productInfo) => productInfo.product, {
-    cascade: true,
-  })
+  @ManyToOne(() => UserEntity, (user) => user.products)
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
+
+  @OneToMany(() => ProductInfoEntity, (productInfo) => productInfo.product)
   product_infos: ProductInfoEntity[];
 
-  @OneToMany(() => LikeEntity, (like) => like.product, { cascade: true })
+  @OneToMany(() => LikeEntity, (like) => like.product)
   likes: LikeEntity[];
 
-  @OneToMany(() => ReviewEntity, (review) => review.product, { cascade: true })
+  @OneToMany(() => ReviewEntity, (review) => review.product)
   reviews: ReviewEntity[];
 
-  @OneToMany(() => CartEntity, (cart) => cart.product, { cascade: true })
+  @OneToMany(() => CartEntity, (cart) => cart.product)
   carts: CartEntity[];
+
+  @OneToMany(() => PhotoEntity, (photo) => photo.product)
+  photos: PhotoEntity[];
 }

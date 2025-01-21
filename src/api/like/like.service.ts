@@ -16,7 +16,7 @@ export class LikeService {
     @InjectRepository(UserEntity)
     private readonly userRepo: UserRepo,
   ) {}
-  async create(body: CreateLikeDto, user_id: number) {
+  async create(body: CreateLikeDto, user_id: string) {
     try {
       const { product_id } = body;
 
@@ -51,7 +51,7 @@ export class LikeService {
   async findAll() {
     try {
       const data = await this.likeRepo.find({
-        relations: ['user', 'product.discount'],
+        relations: ['user', 'product.discount', 'product.photos'],
       });
 
       return { message: 'Success', data };
@@ -60,11 +60,11 @@ export class LikeService {
     }
   }
 
-  async getUserLikes(user_id: number) {
+  async getUserLikes(user_id: string) {
     try {
       const data = await this.likeRepo.find({
         where: { user_id },
-        relations: ['user', 'product.discount'],
+        relations: ['user', 'product.discount', 'product.photos'],
       });
 
       return { message: 'Success', data };
@@ -73,7 +73,7 @@ export class LikeService {
     }
   }
 
-  // async remove(id: number) {
+  // async remove(id: string) {
   //   try {
   //     const findLike = await this.likeRepo.findOneBy({ product_id: id });
 
@@ -87,8 +87,12 @@ export class LikeService {
   //   }
   // }
 
-  async removeAll(user_id: number) {
+  async removeAll(user_id: string) {
     try {
+      const user = await this.userRepo.findOne({ where: { id: user_id } });
+
+      if (!user) throw new HttpException('User not found', 401);
+
       await this.likeRepo.delete({ user_id });
 
       return { message: 'Deleted Succesfully' };

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateDeliveryDto {
   @ApiProperty({
@@ -31,23 +31,23 @@ export class CreateDeliveryDto {
     description: 'the id of user_address',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  user_address_id: number;
+  user_address_id: string;
 
   @ApiProperty({
     description: "the id of one of Sello's branch location",
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  location_id: number;
+  location_id: string;
 
   @ApiProperty({
     description: 'Postamat ID',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  postamat_id: number;
+  postamat_id: string;
 }

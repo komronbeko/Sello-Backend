@@ -11,7 +11,7 @@ export class NotificationEntity extends BaseEntity {
   description: string;
 
   @Column({ nullable: false })
-  user_id: number;
+  user_id: string;
 
   @ManyToOne(() => UserEntity, (user) => user.notifications)
   @JoinColumn({ name: 'user_id' })

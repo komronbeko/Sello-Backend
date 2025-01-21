@@ -8,6 +8,7 @@ import { OrderEntity } from './order.entity';
 import { UserAddressEntity } from './user-adress.entity';
 import { ReviewEntity } from './review.entity';
 import { FeedbackEntity } from './feedback.entity';
+import { ProductEntity } from './product.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
@@ -69,8 +70,13 @@ export class UserEntity extends BaseEntity {
   })
   userAddresses: UserAddressEntity[];
 
-  @OneToMany(()=> FeedbackEntity, (feedback) => feedback.user, {
-    cascade: true
+  @OneToMany(() => FeedbackEntity, (feedback) => feedback.user, {
+    cascade: true,
   })
-  feedbacks: FeedbackEntity[]
+  feedbacks: FeedbackEntity[];
+
+  @OneToMany(() => ProductEntity, (product) => product.user, {
+    cascade: true,
+  })
+  products: ProductEntity[];
 }

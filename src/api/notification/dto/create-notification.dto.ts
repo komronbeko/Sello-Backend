@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateNotificationDto {
   @ApiProperty({
@@ -22,7 +22,7 @@ export class CreateNotificationDto {
     description: 'the id of user to which notification will be sent',
     default: 1,
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  user_id: number;
+  user_id: string;
 }

@@ -29,7 +29,7 @@ export class DeliveryController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.deliveryService.findOne(+id);
+    return this.deliveryService.findOne(id);
   }
 
   @Patch(':id')
@@ -37,11 +37,11 @@ export class DeliveryController {
     @Param('id') id: string,
     @Body() updateDeliveryDto: UpdateDeliveryDto,
   ) {
-    return this.deliveryService.update(+id, updateDeliveryDto);
+    return this.deliveryService.update(id, updateDeliveryDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.deliveryService.remove(+id);
+    return this.deliveryService.remove(id);
   }
 }

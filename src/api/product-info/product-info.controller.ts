@@ -29,7 +29,7 @@ export class ProductInfoController {
 
   @Get(':product_id')
   infosForProduct(@Param('product_id') product_id: string) {
-    return this.productInfoService.infosForProduct(+product_id);
+    return this.productInfoService.infosForProduct(product_id);
   }
 
   @Patch(':id')
@@ -37,11 +37,11 @@ export class ProductInfoController {
     @Param('id') id: string,
     @Body() updateProductInfoDto: UpdateProductInfoDto,
   ) {
-    return this.productInfoService.update(+id, updateProductInfoDto);
+    return this.productInfoService.update(id, updateProductInfoDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.productInfoService.remove(+id);
+    return this.productInfoService.remove(id);
   }
 }

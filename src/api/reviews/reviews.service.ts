@@ -19,7 +19,7 @@ export class ReviewsService {
     @InjectRepository(ProductEntity) private productRepo: ProductRepo,
   ) {}
 
-  async create(body: CreateReviewDto, user_id) {
+  async create(body: CreateReviewDto, user_id: string) {
     try {
       const { product_id, commentary, stars } = body;
 
@@ -69,7 +69,7 @@ export class ReviewsService {
     }
   }
 
-  async findProductReviews(product_id: number, user_id: number) {
+  async findProductReviews(product_id: string, user_id: string) {
     try {
       const findProduct = await this.productRepo.findOneBy({
         id: product_id,
@@ -98,7 +98,7 @@ export class ReviewsService {
     }
   }
 
-  async findUserReviews(user_id: number) {
+  async findUserReviews(user_id: string) {
     try {
       const findUser = await this.userRepo.findOneBy({
         id: user_id,
@@ -116,7 +116,7 @@ export class ReviewsService {
     }
   }
 
-  async findOneReview(product_id: number, user_id: number) {
+  async findOneReview(product_id: string, user_id: string) {
     try {
       const oneReview = await this.reviewRepo.findOne({
         where: { product_id, user_id },
@@ -140,7 +140,7 @@ export class ReviewsService {
     return { message: 'success' };
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       const findReview = await this.reviewRepo.findOneBy({ id });
 
