@@ -14,8 +14,6 @@ import { NestedCategoryRepo } from 'src/infra/repos/nested-category.repo';
 import { FindOneOptions } from 'typeorm';
 import { UserEntity } from 'src/infra/entities/user.entity';
 import { UserRepo } from 'src/infra/repos/user.repo';
-import { ProductHistoryEntity } from 'src/infra/entities/product-history.entity';
-import { ProductHistoryRepo } from 'src/infra/repos/productHistory.repo';
 import { PhotoEntity } from 'src/infra/entities/photo.entity';
 import { photoRepo } from 'src/infra/repos/photo.repo';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,8 +25,6 @@ export class ProductService {
   constructor(
     @InjectRepository(ProductEntity) private readonly productRepo: ProductRepo,
     @InjectRepository(PhotoEntity) private readonly photoRepo: photoRepo,
-    @InjectRepository(ProductHistoryEntity)
-    private readonly prodHisRepo: ProductHistoryRepo,
     @InjectRepository(CatalogEntity) private readonly catalogRepo: CatalogRepo,
     @InjectRepository(UserEntity) private readonly userRepo: UserRepo,
     @InjectRepository(CategoryEntity)
@@ -126,7 +122,7 @@ export class ProductService {
       if (!user) throw new HttpException('User not found', 401);
 
       const userProducts = await this.productRepo.find({
-        where: { user_id },
+        where: { user_id, is_deleted: false },
         relations: ['photos'],
       });
 
@@ -200,8 +196,7 @@ export class ProductService {
 
   async fetchDeleted() {
     try {
-      const data = await this.prodHisRepo.find();
-
+      const data = await this.productRepo.find({ where: { is_deleted: true } });
       return { message: 'success', data };
     } catch (error) {
       throw new HttpException(error.message, 400);
@@ -332,18 +327,7 @@ export class ProductService {
         throw new HttpException('No products found for this user', 404);
       }
 
-      const productHistoryEntries = products.map((product) => {
-        const productHistory = new ProductHistoryEntity();
-        Object.assign(productHistory, product);
-        productHistory.original_product_id = product.id;
-        productHistory.deleted_at = new Date();
-        productHistory.deleted_by = user_id;
-        return productHistory;
-      });
-
-      await this.prodHisRepo.save(productHistoryEntries);
-
-      await this.productRepo.delete({ user_id });
+      await this.productRepo.update({ user_id }, { is_deleted: true });
 
       return { message: 'Deleted Successfully' };
     } catch (error) {
@@ -357,15 +341,7 @@ export class ProductService {
 
       if (!product) throw new HttpException('Product not found', 400);
 
-      const productHistory = new ProductHistoryEntity();
-      Object.assign(productHistory, product);
-      productHistory.original_product_id = id;
-      productHistory.deleted_at = new Date();
-      productHistory.deleted_by = user_id;
-
-      await this.prodHisRepo.save(productHistory);
-
-      await this.productRepo.delete(id);
+      await this.productRepo.update(id, { is_deleted: true });
 
       return { message: 'success' };
     } catch (error) {
@@ -375,26 +351,17 @@ export class ProductService {
 
   async restoreProduct(product_id: string) {
     try {
-      const productHistory = await this.prodHisRepo.findOne({
-        where: { original_product_id: product_id },
+      const findProduct = await this.productRepo.findOne({
+        where: { id: product_id },
       });
 
-      if (!productHistory)
+      if (!findProduct)
         throw new HttpException(
           'Product not found in history or already restored',
           404,
         );
 
-      const { deleted_at, deleted_by, original_product_id, ...productData } =
-        productHistory;
-
-      const restoredProduct = this.productRepo.create({
-        ...productData,
-      });
-
-      await this.productRepo.save(restoredProduct);
-
-      await this.prodHisRepo.delete({ original_product_id });
+      await this.productRepo.update({ id: product_id }, { is_deleted: false });
 
       return { message: 'success' };
     } catch (error) {

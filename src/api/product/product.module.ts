@@ -10,7 +10,6 @@ import { NestedCategoryEntity } from 'src/infra/entities/nested-category.entity'
 import { ReviewEntity } from 'src/infra/entities/review.entity';
 import { UserEntity } from 'src/infra/entities/user.entity';
 import { AdminEntity } from 'src/infra/entities/admin.entity';
-import { ProductHistoryEntity } from 'src/infra/entities/product-history.entity';
 import { PhotoEntity } from 'src/infra/entities/photo.entity';
 
 @Module({
@@ -23,7 +22,6 @@ import { PhotoEntity } from 'src/infra/entities/photo.entity';
       ReviewEntity,
       UserEntity,
       AdminEntity,
-      ProductHistoryEntity,
       PhotoEntity,
     ]),
   ],

@@ -58,6 +58,9 @@ export class ProductEntity extends BaseEntity {
   @Column({ nullable: false })
   catalog_id: string;
 
+  @Column({ nullable: true, default: 'false' })
+  is_deleted: boolean;
+
   @ManyToOne(() => DiscountEntity, (discount) => discount.products)
   @JoinColumn({ name: 'discount_id' })
   discount: DiscountEntity;

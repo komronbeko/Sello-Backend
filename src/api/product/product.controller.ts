@@ -18,7 +18,6 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { myReq } from 'src/infra/interfaces/custom-request';
 import { isAdminGuard } from 'src/common/guards/is-admin.guard';
 import { VerifyProdDto } from './dto/verify-product.dto';
-// import { PaginationDto } from './dto/pagination.dto';
 
 @ApiTags('Products')
 @Controller('product')
