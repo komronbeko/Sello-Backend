@@ -194,9 +194,12 @@ export class ProductService {
     }
   }
 
-  async fetchDeleted() {
+  async fetchDeleted(user_id) {
     try {
-      const data = await this.productRepo.find({ where: { is_deleted: true } });
+      const data = await this.productRepo.find({
+        where: { user_id, is_deleted: true },
+        relations: ['photos'],
+      });
       return { message: 'success', data };
     } catch (error) {
       throw new HttpException(error.message, 400);
@@ -316,20 +319,46 @@ export class ProductService {
     }
   }
 
-  async deleteUserProducts(user_id: string) {
+  async softDeleteUserProducts(user_id: string) {
     try {
       const user = await this.userRepo.findOne({ where: { id: user_id } });
       if (!user) throw new HttpException('User not found', 404);
 
-      const products = await this.productRepo.find({ where: { user_id } });
+      const products = await this.productRepo.find({
+        where: { user_id, is_deleted: false },
+      });
 
       if (products.length === 0) {
         throw new HttpException('No products found for this user', 404);
       }
 
-      await this.productRepo.update({ user_id }, { is_deleted: true });
+      await this.productRepo.update(
+        { user_id, is_deleted: false },
+        { is_deleted: true },
+      );
 
       return { message: 'Deleted Successfully' };
+    } catch (error) {
+      throw new HttpException(error.message, 400);
+    }
+  }
+
+  async hardDeleteUserProducts(user_id: string) {
+    try {
+      const user = await this.userRepo.findOne({ where: { id: user_id } });
+      if (!user) throw new HttpException('User not found', 404);
+
+      const products = await this.productRepo.find({
+        where: { user_id, is_deleted: true },
+      });
+
+      if (products.length === 0) {
+        throw new HttpException('No deleted products found for this user', 404);
+      }
+
+      await this.productRepo.delete({ user_id, is_deleted: true });
+
+      return { message: 'Product(s) Hard Deleted Successfully' };
     } catch (error) {
       throw new HttpException(error.message, 400);
     }

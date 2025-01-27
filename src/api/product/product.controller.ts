@@ -16,7 +16,6 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { myReq } from 'src/infra/interfaces/custom-request';
-import { isAdminGuard } from 'src/common/guards/is-admin.guard';
 import { VerifyProdDto } from './dto/verify-product.dto';
 
 @ApiTags('Products')
@@ -62,9 +61,9 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
-  @Get('/deleted/all')
-  findDeleted() {
-    return this.productService.fetchDeleted();
+  @Get('/deleted/one-user')
+  findDeleted(@Req() req: myReq) {
+    return this.productService.fetchDeleted(req.userId);
   }
 
   @Get('/filters/all-in-one')
@@ -99,9 +98,16 @@ export class ProductController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  @Delete('/delete/user-products')
-  deleteUserProducts(@Req() req: myReq) {
-    return this.productService.deleteUserProducts(req.userId);
+  @Delete('/soft-delete/user-products')
+  softDeleteUserProducts(@Req() req: myReq) {
+    return this.productService.softDeleteUserProducts(req.userId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Delete('/hard-delete/user-products')
+  hardDeleteUserProducts(@Req() req: myReq) {
+    return this.productService.hardDeleteUserProducts(req.userId);
   }
 
   @ApiBearerAuth()
@@ -112,7 +118,7 @@ export class ProductController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(isAdminGuard)
+  @UseGuards(AuthGuard)
   @Patch('/restore/:id')
   restoreProduct(@Param('id') id: string) {
     return this.productService.restoreProduct(id);
