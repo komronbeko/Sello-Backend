@@ -23,6 +23,7 @@ import { PhotoEntity } from 'src/infra/entities/photo.entity';
       UserEntity,
       AdminEntity,
       PhotoEntity,
+      ProductEntity,
     ]),
   ],
   controllers: [ProductController],

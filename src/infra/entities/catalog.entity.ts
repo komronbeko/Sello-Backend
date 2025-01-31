@@ -11,16 +11,19 @@ export class CatalogEntity extends BaseEntity {
 
   @OneToMany(() => BannerEntity, (banners) => banners.catalog, {
     cascade: true,
+    onDelete: 'CASCADE',
   })
   banners: BannerEntity[];
 
   @OneToMany(() => CategoryEntity, (category) => category.catalog, {
     cascade: true,
+    onDelete: 'CASCADE',
   })
-  categories: CatalogEntity[];
+  categories: CategoryEntity[];
 
   @OneToMany(() => ProductEntity, (product) => product.catalog, {
     cascade: true,
+    onDelete: 'CASCADE',
   })
   products: ProductEntity[];
 }

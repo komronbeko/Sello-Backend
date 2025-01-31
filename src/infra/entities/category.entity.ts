@@ -12,7 +12,9 @@ export class CategoryEntity extends BaseEntity {
   @Column({ nullable: false })
   catalog_id: string;
 
-  @ManyToOne(() => CatalogEntity, (catalog) => catalog.categories)
+  @ManyToOne(() => CatalogEntity, (catalog) => catalog.categories, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'catalog_id' })
   catalog: CatalogEntity;
 

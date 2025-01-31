@@ -76,7 +76,9 @@ export class ProductEntity extends BaseEntity {
   @JoinColumn({ name: 'nested_category_id' })
   nested_category: NestedCategoryEntity;
 
-  @ManyToOne(() => CatalogEntity, (catalog) => catalog.products)
+  @ManyToOne(() => CatalogEntity, (catalog) => catalog.products, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'catalog_id' })
   catalog: CatalogEntity;
 

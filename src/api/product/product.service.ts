@@ -88,7 +88,7 @@ export class ProductService {
     try {
       const offset = (page - 1) * limit;
       const [data, total] = await this.productRepo.findAndCount({
-        where: { is_verified: true },
+        where: { is_verified: true, is_deleted: false },
         relations: [
           'discount',
           'category',
@@ -158,7 +158,7 @@ export class ProductService {
   async getUnverified() {
     try {
       const data = await this.productRepo.find({
-        where: { is_verified: false },
+        where: { is_verified: false, is_deleted: false },
         relations: [
           'discount',
           'category',
@@ -182,6 +182,7 @@ export class ProductService {
     try {
       const findProduct = await this.productRepo.findOneBy({
         id: body.product_id,
+        is_deleted: false,
       });
 
       if (!findProduct) throw new HttpException('Product not found', 400);
@@ -225,7 +226,8 @@ export class ProductService {
         .leftJoinAndSelect('product.nested_category', 'nested_category')
         .leftJoinAndSelect('product.discount', 'discount')
         .leftJoinAndSelect('product.photos', 'photos')
-        .where('is_verified = true');
+        .where('is_verified = true')
+        .andWhere('is_deleted = false');
 
       if (catalog_id) {
         query = query.andWhere('product.catalog_id = :catalog_id', {
