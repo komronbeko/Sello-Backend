@@ -6,7 +6,7 @@ import { ReplenishBalanceDto } from './dto/replenish-balance.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { myReq } from 'src/infra/interfaces/custom-request';
 
-@ApiBearerAuth()
+@ApiBearerAuth() // Add this decorator to indicate that the endpoints require authentication
 @UseGuards(AuthGuard)
 @ApiTags('Users')
 @Controller('user')

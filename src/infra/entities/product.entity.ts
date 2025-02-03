@@ -52,7 +52,7 @@ export class ProductEntity extends BaseEntity {
   @Column({ nullable: false })
   category_id: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   nested_category_id: string;
 
   @Column({ nullable: false })
