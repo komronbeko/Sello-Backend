@@ -39,19 +39,18 @@ export class ProductService {
       const product_id = uuidv4();
 
       // Run all validations concurrently
-      const [findUser, findCatalog, findCategory, findNestedCategory] =
-        await Promise.all([
-          this.userRepo.findOneBy({ id: user_id }),
-          this.catalogRepo.findOneBy({ id: catalog_id }),
-          this.categoryRepo.findOneBy({ id: category_id }),
-          this.nestedCategoryRepo.findOneBy({ id: nested_category_id }),
-        ]);
+      const [findUser, findCatalog, findCategory] = await Promise.all([
+        this.userRepo.findOneBy({ id: user_id }),
+        this.catalogRepo.findOneBy({ id: catalog_id }),
+        this.categoryRepo.findOneBy({ id: category_id }),
+        // this.nestedCategoryRepo.findOneBy({ id: nested_category_id }),
+      ]);
 
       if (!findUser) throw new HttpException('User not found', 400);
       if (!findCatalog) throw new HttpException('Catalog not found', 400);
       if (!findCategory) throw new HttpException('Category not found', 400);
-      if (!findNestedCategory)
-        throw new HttpException('Nested category not found', 400);
+      // throw new HttpException('Nested category not found', 400);
+      // if (!findNestedCategory)
 
       // Create and save product
       const newProduct = this.productRepo.create({
@@ -80,7 +79,7 @@ export class ProductService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException('An unexpected error occurred', 500);
+      throw new HttpException(error, 400);
     }
   }
 

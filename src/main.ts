@@ -1,19 +1,39 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
+import * as express from 'express';
+import * as compression from 'compression';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
+
+  app.setGlobalPrefix('api');
+
+  app.use('/uploads', express.static(process.cwd() + '/uploads'));
+
+  app.use(compression());
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
-    .setTitle('Sello API')
-    .setDescription('Sello API documentation')
+    .setTitle('Blog documantation')
+    .setDescription('Blogs API description. You can test them out in-site!')
     .setVersion('1.0')
-    .addBearerAuth() // Add this line to enable bearer token authentication
+    .addBearerAuth()
+    .addTag('Sello')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
+
+  const PORT = +process.env.PORT;
+
+  await app.listen(PORT);
 }
 bootstrap();

@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsAlphanumeric, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsStrongPassword } from 'class-validator';
 
 export class PassResetDto {
   @ApiProperty({
     description: 'new  password',
     default: 'daredevil-2',
   })
-  @IsAlphanumeric()
+  @IsStrongPassword()
   @IsNotEmpty()
   new_pass: string;
 }

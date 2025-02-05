@@ -65,11 +65,11 @@ export class AuthService {
 
       const findUser = await this.usersRepo.findOneBy({ email });
 
-      if (!findUser) throw new ForbiddenException();
+      if (!findUser) throw new HttpException("User doesn't exist", 403);
 
       const comparePass = await bcrypt.compare(password, findUser.password);
 
-      if (!comparePass) throw new ForbiddenException();
+      if (!comparePass) throw new HttpException('Password does not match', 403);
 
       const code: number = Math.floor(100000 + Math.random() * 900000);
 

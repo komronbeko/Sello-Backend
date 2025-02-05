@@ -110,7 +110,7 @@ export class CreateProductDto {
     default: 1,
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   nested_category_id: string;
 
   @ApiProperty({

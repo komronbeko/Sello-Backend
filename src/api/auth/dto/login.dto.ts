@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsAlphanumeric,
   IsEmail,
   IsIn,
   IsNotEmpty,
@@ -13,7 +12,7 @@ export class LoginDto {
     description: 'alphanumeric password for login',
     default: 'password1234',
   })
-  @IsAlphanumeric()
+  @IsString()
   @IsNotEmpty()
   password: string;
 
